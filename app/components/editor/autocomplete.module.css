@@ -1,0 +1,28 @@
+.autocomplete {
+    position: relative;
+}
+
+.input {
+    width: 100%;
+    outline: none;
+}
+
+.suggestions {
+    position: absolute;
+    z-index: 1;
+    width: calc(100% + 5px);
+    background-color: white;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-radius: 5px;
+    border: 1px solid gray;
+    cursor: pointer;
+}
+
+.suggestionRow {
+    padding-left: 5px;
+}
+
+.selected {
+    background-color: lightgray;
+}

@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 
+
+import Autocomplete from './Autocomplete'
+
 import styles from './editor.module.css'
 
 import shaken from '../../img/shaken.png'
@@ -10,6 +13,7 @@ import dot from '../../img/dot.png'
 const emptyIngredient = { name: '', amount: '' }
 
 const Editor = (props) => {
+    const [availableIngredients, setAvailableIngredients] = useState([])
     const [isNew, setIsNew] = useState(false)
     const [name, setName] = useState('')
     const [ingredients, setIngredients] = useState([emptyIngredient])
@@ -17,9 +21,14 @@ const Editor = (props) => {
     const [method, setMethod] = useState('shaken')
     const [info, setInfo] = useState('')
 
-    useEffect(() => init(), [])
+    const [x, setX] = useState('')
 
-    const init = () => {
+    useEffect(() => {
+        loadCocktailInfo()
+        getAvailableIngredients()
+    }, [])
+
+    const loadCocktailInfo = () => {
         if (!props.cocktail) {
             console.log('new cocktail')
             setIsNew(true)
@@ -35,15 +44,26 @@ const Editor = (props) => {
         }
     }
 
+    const getAvailableIngredients = async () => {
+        const result = await fetch('https://jtthaavi.kapsi.fi/subrosa/cocktail-index/ingredients')
+        if (result.status != 200) {
+            console.error(result)
+        } else {
+            const resultJson = await result.json()
+            setAvailableIngredients(resultJson.map(item => item.name))
+            console.log('available ingredients', resultJson.map(item => item.name))
+        }
+    }
+
     /*
     *  Ingredient list has always an empty item at the end. 
     */
-    const changeIngredient = (index, property) => (event) => {
+    const changeIngredient = (index, property, value) => {
         const newIngredients = ingredients.map((item, i) => {
             if (i !== index) {
                 return item
             } else {
-                return { ...item, [property]: event.target.value }
+                return { ...item, [property]: value }
             }
         })
 
@@ -63,41 +83,22 @@ const Editor = (props) => {
         setIngredients(newIngredients)
     }
 
-    const changeIngredientAmount = (index, event) => {
-        const amount = event.target.value
-        setIngredients(ingredients => ingredients.map((ingredient, i) => {
-            if (i !== index) {
-                return ingredient
-            } else {
-                return { ...ingredient, amount }
-            }
-        }))
+    const changeIngredientAmount = (index) => (event) => {
+        changeIngredient(index, 'amount', event.target.value)
     }
 
-    const changeIngredientName = (index, event) => {
-        const name = event.target.value
-        setIngredients(ingredients => ingredients.map((ingredient, i) => {
-            if (i !== index) {
-                return ingredient
-            } else {
-                return { ...ingredient, name }
-            }
-        }))
-    }
-
-    const addNewIngredient = (parameter, event) => {
-        const newIngredient = { name: '', amount: '', [parameter]: event.target.value }
-        setIngredients(ingredients => ingredients.concat(newIngredient))
+    const changeIngredientName = (index) => (value) => {
+        changeIngredient(index, 'name', value)
     }
 
     return (
         <div className={styles.editor}>
+
             <div className={styles.name}>
                 <div className={styles.header}>Name</div>
                 <div className={styles.content}>
                     <input type="text" value={name} onChange={evt => setName(evt.target.value)} />
                 </div>
-
             </div>
 
             <div className={styles.ingredients}>
@@ -112,18 +113,16 @@ const Editor = (props) => {
                                     <input type="text"
                                         className={styles.ingredientAmountInput}
                                         value={amount}
-                                        onChange={changeIngredient(index, 'amount')} />
-                                    <input type="text"
-                                        className={styles.ingredientNameInput}
+                                        onChange={changeIngredientAmount(index)} />
+                                    <Autocomplete
+                                        options={availableIngredients}
                                         value={name}
-                                        onChange={changeIngredient(index, 'name')} />
+                                        onChange={changeIngredientName(index)} />
                                 </div>
                             )
                         })}
                     </div>
-
                 </div>
-
             </div>
 
             <div className={styles.garnish}>
