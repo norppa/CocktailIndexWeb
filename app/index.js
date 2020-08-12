@@ -8,7 +8,7 @@ import Editor from './components/editor/Editor'
 const App = (props) => {
     const [error, setError] = useState(null)
     const [cocktails, setCocktails] = useState([])
-    const [selected, setSelected] = useState(null)
+    const [selected, setSelected] = useState(0)
     const [editorView, setEditorView] = useState(false)
 
     useEffect(() => {

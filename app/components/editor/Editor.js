@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react'
 
 import styles from './editor.module.css'
 
+import shaken from '../../img/shaken.png'
+import stirred from '../../img/stirred.png'
+import built from '../../img/built.png'
+import dot from '../../img/dot.png'
+
 const emptyIngredient = { name: '', amount: '' }
 
 const Editor = (props) => {
@@ -16,8 +21,10 @@ const Editor = (props) => {
 
     const init = () => {
         if (!props.cocktail) {
+            console.log('new cocktail')
             setIsNew(true)
         } else {
+            console.log('edit cocktail')
             const { name, ingredients, garnish, method, info } = props.cocktail
             setName(name)
             setIngredients(ingredients.concat(emptyIngredient))
@@ -37,7 +44,7 @@ const Editor = (props) => {
                 return item
             } else {
                 return { ...item, [property]: event.target.value }
-            }            
+            }
         })
 
         // if a property value was added to the last item, create a new empty last item
@@ -62,7 +69,7 @@ const Editor = (props) => {
             if (i !== index) {
                 return ingredient
             } else {
-                return {...ingredient, amount }
+                return { ...ingredient, amount }
             }
         }))
     }
@@ -73,50 +80,87 @@ const Editor = (props) => {
             if (i !== index) {
                 return ingredient
             } else {
-                return {...ingredient, name }
+                return { ...ingredient, name }
             }
         }))
     }
 
     const addNewIngredient = (parameter, event) => {
-        const newIngredient = { name: '', amount: '', [parameter]: event.target.value}
+        const newIngredient = { name: '', amount: '', [parameter]: event.target.value }
         setIngredients(ingredients => ingredients.concat(newIngredient))
     }
 
     return (
         <div className={styles.editor}>
             <div className={styles.name}>
-                Name: <input type="text" value={name} onChange={evt => setName(evt.target.value)} />
+                <div className={styles.header}>Name</div>
+                <div className={styles.content}>
+                    <input type="text" value={name} onChange={evt => setName(evt.target.value)} />
+                </div>
+
             </div>
 
             <div className={styles.ingredients}>
-                {ingredients.map((ingredient, index) => {
-                    const {name, amount} = ingredient
-                    return (
-                        <div key={index}>
-                            {`\u2022`} 
-                            <input type="text" value={amount} onChange={changeIngredient(index, 'amount')} /> 
-                            <input type="text" value={name} onChange={changeIngredient(index, 'name')} />
-                        </div>
-                    )
-                })}
+                <div className={styles.header}>Ingredients</div>
+                <div className={styles.content}>
+                    <div>
+                        {ingredients.map((ingredient, index) => {
+                            const { name, amount } = ingredient
+                            return (
+                                <div className={styles.ingredientRow} key={index}>
+                                    <img src={dot} className={styles.dot} />
+                                    <input type="text"
+                                        className={styles.ingredientAmountInput}
+                                        value={amount}
+                                        onChange={changeIngredient(index, 'amount')} />
+                                    <input type="text"
+                                        className={styles.ingredientNameInput}
+                                        value={name}
+                                        onChange={changeIngredient(index, 'name')} />
+                                </div>
+                            )
+                        })}
+                    </div>
+
+                </div>
+
             </div>
 
             <div className={styles.garnish}>
-                Garnish: <input type="text" value={garnish} onChange={evt => setGarnish(evt.target.value)} />
+                <div className={styles.header}>Garnish</div>
+                <div className={styles.content}>
+                    <input type="text" value={garnish} onChange={evt => setGarnish(evt.target.value)} />
+                </div>
             </div>
 
             <div className={styles.method}>
-                Method:
-                <select value={method} onChange={evt => setMethod(evt.target.value)}>
-                    <option value="shaken">Shaken</option>
-                    <option value="stirred">Stirred</option>
-                    <option value="built">Built</option>
-                </select>
+                <div className={styles.header}>Method</div>
+                <div className={`${styles.content} ${styles.methodIcons}`}>
+                    <img src={shaken}
+                        alt="shaken"
+                        className={method == 'shaken' ? styles.selectedIcon : styles.notSelectedIcon}
+                        onClick={(setMethod.bind(this, 'shaken'))} />
+                    <img src={stirred}
+                        alt="stirred"
+                        className={method == 'stirred' ? styles.selectedIcon : styles.notSelectedIcon}
+                        onClick={setMethod.bind(this, 'stirred')} />
+                    <img src={built}
+                        alt="built"
+                        className={method == 'built' ? styles.selectedIcon : styles.notSelectedIcon}
+                        onClick={setMethod.bind(this, 'built')} />
+                </div>
             </div>
 
             <div className={styles.info}>
-                Info: <textarea value={info} onChange={evt => setInfo(evt.target.value)} />
+                <div className={styles.header}>Information</div>
+                <div className={styles.content}>
+                    <textarea value={info} onChange={evt => setInfo(evt.target.value)} />
+                </div>
+            </div>
+
+            <div className={styles.buttons}>
+                <button>Save</button>
+                <button>Cancel</button>
             </div>
         </div>
     )
