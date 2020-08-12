@@ -2,10 +2,22 @@ import React, { useEffect, useState } from 'react'
 import styles from './viewer.module.css'
 
 const Cocktail = (props) => {
-    const [showAdditional, setShowAdditional] = useState(false)
+    const [showAdditionalInfo, setShowAdditionalInfo] = useState(false)
 
-    const toggleShowAdditional = () => {
-        setShowAdditional((prevShowAdditional) => !prevShowAdditional)
+    const handleClick = () => {
+        if (props.selected && !showAdditionalInfo) {
+            // impossible by logic
+            setShowAdditionalInfo(true)
+        } else if (props.selected && showAdditionalInfo) {
+            setShowAdditionalInfo(false)
+            props.select()
+        } else if (!props.selected && !showAdditionalInfo) {
+            setShowAdditionalInfo(true)
+            props.select()
+        } else if (!props.selected && showAdditionalInfo) {
+            setShowAdditionalInfo(false)
+            props.select(true)
+        }
     }
 
     const GarnishText = () => {
@@ -24,7 +36,7 @@ const Cocktail = (props) => {
     }
 
     const AdditionalInfo = () => {
-        if (!showAdditional) {
+        if (!showAdditionalInfo) {
             return null
         }
 
@@ -43,7 +55,7 @@ const Cocktail = (props) => {
     }
 
     return (
-        <div className={styles.Cocktail} onClick={toggleShowAdditional}>
+        <div className={`${styles.Cocktail} ${props.selected ? styles.selected : null}`} onClick={handleClick}>
             <h1>{props.cocktail.name}</h1>
             <AdditionalInfo />
         </div>

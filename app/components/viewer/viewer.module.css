@@ -20,6 +20,10 @@
     margin: 0;
 }
 
+.selected {
+    border-width: 2px;
+}
+
 .AdditionalInfo {
     font-family: 'Alegreya', serif;
 }

@@ -3,31 +3,13 @@ import ReactDOM from 'react-dom'
 import './index.css'
 
 import Viewer from './components/viewer/Viewer'
-
-const bogusList = [
-    {
-        name: "ice water",
-        method: "stirred",
-        instructions: "be cool",
-        garnish: "flower",
-        ingredients: [
-            { name: "water", amount: "1 oz" },
-            { name: "ice", amount: "1 cube" }
-        ]
-    },
-    {
-        name: "regular water",
-        method: "shaken",
-        ingredients: [
-            { name: "water", amount: "9 oz" },
-            { name: "mint", amount: "1 leaf" }
-        ]
-    },
-]
+import Editor from './components/editor/Editor'
 
 const App = (props) => {
     const [error, setError] = useState(null)
     const [cocktails, setCocktails] = useState([])
+    const [selected, setSelected] = useState(null)
+    const [editorView, setEditorView] = useState(false)
 
     useEffect(() => {
         readDatabase()
@@ -38,20 +20,37 @@ const App = (props) => {
         const result = await fetch('https://jtthaavi.kapsi.fi/subrosa/cocktail-index')
         if (result.status != 200) {
             console.error(result)
-            setError('could not read API, status ' + JSON.stringify(result))
+            setError('could not read API, status ' + result.status)
         } else {
             const cocktails = await result.json()
-            console.log('result', cocktails)
             setCocktails(cocktails)
         }
+    }
+
+    const select = (index) => {
+        if (selected == index) {
+            setSelected(null)
+        } else[
+            setSelected(index)
+        ]
     }
 
     if (error) {
         return <div>ERROR: {error}</div>
     }
 
-    return (
-        <Viewer cocktails={cocktails} />
+    if (editorView) {
+        return <Editor cocktail={cocktails[selected]} />
+    }
+
+    console.log(selected)
+    return (<div>
+        <button onClick={setEditorView.bind(this, true)}>edit</button>
+        <Viewer cocktails={cocktails}
+            selectedIdx={selected}
+            select={select}
+            setEditorView={setEditorView} />
+    </div>
     )
 
 }
