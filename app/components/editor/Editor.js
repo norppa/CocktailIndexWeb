@@ -28,6 +28,10 @@ const Editor = (props) => {
         getAvailableIngredients()
     }, [])
 
+    useEffect(() => {
+        console.log('ingredients updated', ingredients)
+    },[ingredients])
+
     const loadCocktailInfo = () => {
         if (!props.cocktail) {
             console.log('new cocktail')
@@ -91,6 +95,10 @@ const Editor = (props) => {
         changeIngredient(index, 'name', value)
     }
 
+    const changeIngredientNew = (index) => (value) => {
+        changeIngredient(index, 'new', value)
+    }
+
     return (
         <div className={styles.editor}>
 
@@ -117,7 +125,8 @@ const Editor = (props) => {
                                     <Autocomplete
                                         options={availableIngredients}
                                         value={name}
-                                        onChange={changeIngredientName(index)} />
+                                        onChange={changeIngredientName(index)}
+                                        onWildInput={changeIngredientNew(index)} />
                                 </div>
                             )
                         })}

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import styles from './autocomplete.module.css'
 
 const Autocomplete = (props) => {
-    const [userInput, setUserInput] = useState('')
     const [showSuggestions, setShowSuggestions] = useState(false)
     const [selectedSuggestion, setSelectedSuggestion] = useState(0)
     const [suggestionList, setSuggestionList] = useState([])
@@ -17,7 +16,7 @@ const Autocomplete = (props) => {
                 return item.toLowerCase().includes(newInput.toLowerCase())
             })
             setSuggestionList(filteredSuggestions)
-            setShowSuggestions(true)
+            setShowSuggestions(filteredSuggestions.length > 0)
         }
 
         props.onChange(newInput)
@@ -36,6 +35,7 @@ const Autocomplete = (props) => {
             props.onChange(suggestionList[newSelectedSuggestion])
         } else if (keyCode == 13) { // ENTER
             props.onChange(suggestionList[selectedSuggestion])
+            checkWildInput()
             setShowSuggestions(false)
         } else if (keyCode == 9) { // TAB
             setShowSuggestions(false)
@@ -49,6 +49,7 @@ const Autocomplete = (props) => {
 
     const onBlur = () => {
         setShowSuggestions(false)
+        checkWildInput()
     }
 
     const onFocus = () => {
@@ -57,9 +58,13 @@ const Autocomplete = (props) => {
                 return item.toLowerCase().includes(props.value.toLowerCase())
             })
             setSuggestionList(filteredSuggestions)
-            setShowSuggestions(true)
+            setShowSuggestions(filteredSuggestions.length > 0)
         }
+    }
 
+    const checkWildInput = () => {
+        const isWildInput = !props.options.some(option => option.toLowerCase() == props.value.toLowerCase())
+        props.onWildInput(isWildInput)
     }
 
     const Suggestions = () => {
@@ -91,7 +96,6 @@ const Autocomplete = (props) => {
                 onBlur={onBlur}
                 onFocus={onFocus}
             />
-
             <Suggestions />
         </div>
     )
