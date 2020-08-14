@@ -11,31 +11,35 @@ const Autocomplete = (props) => {
         const newInput = event.target.value
         if (newInput == '') {
             setShowSuggestions(false)
+            props.onChange({ name: '' })
         } else {
             const filteredSuggestions = props.options.filter(item => {
                 return item.toLowerCase().includes(newInput.toLowerCase())
             })
             setSuggestionList(filteredSuggestions)
             setShowSuggestions(filteredSuggestions.length > 0)
+            const isWildInput = !props.options.some(option => option.toLowerCase() == newInput.toLowerCase())
+            console.log('isWildInput', isWildInput)  
+            props.onChange({ name: newInput, isNew: isWildInput })
         }
 
-        props.onChange(newInput)
+        
     }
 
     const onKeyDown = (event) => {
+        if (!showSuggestions) return undefined
+
         const keyCode = event.keyCode
-        console.log(keyCode)
         if (keyCode == 38) { // UP
             const newSelectedSuggestion = Math.max(0, selectedSuggestion - 1)
             setSelectedSuggestion(newSelectedSuggestion)
-            props.onChange(suggestionList[newSelectedSuggestion])
+            props.onChange({ name: suggestionList[newSelectedSuggestion], isNew: false })
         } else if (keyCode == 40) { // DOWN
             const newSelectedSuggestion = Math.min(suggestionList.length - 1, selectedSuggestion + 1)
             setSelectedSuggestion(newSelectedSuggestion)
-            props.onChange(suggestionList[newSelectedSuggestion])
+            props.onChange({ name: suggestionList[newSelectedSuggestion], isNew: false })
         } else if (keyCode == 13) { // ENTER
-            props.onChange(suggestionList[selectedSuggestion])
-            checkWildInput()
+            props.onChange({ name: suggestionList[selectedSuggestion], isNew: false })
             setShowSuggestions(false)
         } else if (keyCode == 9) { // TAB
             setShowSuggestions(false)
@@ -43,28 +47,23 @@ const Autocomplete = (props) => {
     }
 
     const onMouseDown = (index) => () => {
-        props.onChange(suggestionList[index])
+        props.onChange({name: suggestionList[index], isNew: false })
         setShowSuggestions(false)
     }
 
     const onBlur = () => {
         setShowSuggestions(false)
-        checkWildInput()
     }
 
     const onFocus = () => {
-        if (props.value != '') {
+        console.log('focus', props.value, props.options)
+        if (props.value.name != '') {
             const filteredSuggestions = props.options.filter(item => {
-                return item.toLowerCase().includes(props.value.toLowerCase())
+                return item.toLowerCase().includes(props.value.name.toLowerCase())
             })
             setSuggestionList(filteredSuggestions)
             setShowSuggestions(filteredSuggestions.length > 0)
         }
-    }
-
-    const checkWildInput = () => {
-        const isWildInput = !props.options.some(option => option.toLowerCase() == props.value.toLowerCase())
-        props.onWildInput(isWildInput)
     }
 
     const Suggestions = () => {
@@ -89,8 +88,8 @@ const Autocomplete = (props) => {
     return (
         <div className={styles.autocomplete}>
             <input type="text"
-                className={styles.input}
-                value={props.value}
+                className={`${styles.input} ${props.value.isNew ? styles.highlight : null}`}
+                value={props.value.name}
                 onChange={onUserInput}
                 onKeyDown={onKeyDown}
                 onBlur={onBlur}

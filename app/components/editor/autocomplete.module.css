@@ -4,8 +4,13 @@
 }
 
 .input {
+    box-sizing : border-box;
     width: 100%;
     outline: none;
+}
+
+.highlight {
+    border-color: red;
 }
 
 .suggestions {

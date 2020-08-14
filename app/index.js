@@ -43,7 +43,6 @@ const App = (props) => {
         return <Editor cocktail={cocktails[selected]} />
     }
 
-    console.log(selected)
     return (<div>
         <button onClick={setEditorView.bind(this, true)}>edit</button>
         <Viewer cocktails={cocktails}

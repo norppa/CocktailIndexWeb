@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react'
 
 
 import Autocomplete from './Autocomplete'
+import {
+    getAvailableIngredients,
+    saveNewIngredient
+} from '../../modules/rest'
 
 import styles from './editor.module.css'
 
@@ -25,12 +29,17 @@ const Editor = (props) => {
 
     useEffect(() => {
         loadCocktailInfo()
-        getAvailableIngredients()
+        const fetchAvailableIngredients = async () => {
+            const result =  await getAvailableIngredients()
+            setAvailableIngredients(result)
+        }
+        fetchAvailableIngredients()
+
     }, [])
 
     useEffect(() => {
         console.log('ingredients updated', ingredients)
-    },[ingredients])
+    }, [ingredients])
 
     const loadCocktailInfo = () => {
         if (!props.cocktail) {
@@ -48,55 +57,58 @@ const Editor = (props) => {
         }
     }
 
-    const getAvailableIngredients = async () => {
-        const result = await fetch('https://jtthaavi.kapsi.fi/subrosa/cocktail-index/ingredients')
-        if (result.status != 200) {
-            console.error(result)
-        } else {
-            const resultJson = await result.json()
-            setAvailableIngredients(resultJson.map(item => item.name))
-            console.log('available ingredients', resultJson.map(item => item.name))
-        }
-    }
+
 
     /*
     *  Ingredient list has always an empty item at the end. 
     */
-    const changeIngredient = (index, property, value) => {
-        const newIngredients = ingredients.map((item, i) => {
+    const changeIngredient = (index, replacement) => {
+        let newIngredients = ingredients.map((item, i) => {
             if (i !== index) {
                 return item
             } else {
-                return { ...item, [property]: value }
+                return { ...item, ...replacement }
             }
         })
 
         // if a property value was added to the last item, create a new empty last item
         if (index == ingredients.length - 1) {
-            newIngredients.push(emptyIngredient)
+            newIngredients = newIngredients.concat(emptyIngredient)
         }
 
         // if second to last ingredient is empty, remove the last (empty) ingredient
         if (index == ingredients.length - 2) {
             const { name, amount } = newIngredients[index]
             if (name == '' && amount == '') {
-                newIngredients.pop()
+                newIngredients = newIngredients.slice(0, newIngredients.length - 1)
             }
         }
 
         setIngredients(newIngredients)
     }
 
-    const changeIngredientAmount = (index) => (event) => {
-        changeIngredient(index, 'amount', event.target.value)
+    const onIngredientAmountChange = (index) => (event) => {
+        changeIngredient(index, { amount: event.target.value })
     }
 
-    const changeIngredientName = (index) => (value) => {
-        changeIngredient(index, 'name', value)
+    const onIngredientNameChange = (index) => (replacement) => {
+        changeIngredient(index, replacement)
     }
 
-    const changeIngredientNew = (index) => (value) => {
-        changeIngredient(index, 'new', value)
+    const addIngredient = async (index) => {
+        console.log('adding ingredient')
+        const success = await saveNewIngredient(ingredients[index].name)
+        if (success) {
+            setAvailableIngredients(await getAvailableIngredients())
+            setIngredients(ingredients => ingredients.map((ingredient, i) => {
+                if (i == index) {
+                    const { name, amount } = ingredients[index]
+                    return { name, amount }
+                } else {
+                    return ingredient
+                }
+            }))
+        }
     }
 
     return (
@@ -114,19 +126,23 @@ const Editor = (props) => {
                 <div className={styles.content}>
                     <div>
                         {ingredients.map((ingredient, index) => {
-                            const { name, amount } = ingredient
+                            const { name, amount, isNew } = ingredient
                             return (
                                 <div className={styles.ingredientRow} key={index}>
                                     <img src={dot} className={styles.dot} />
                                     <input type="text"
                                         className={styles.ingredientAmountInput}
                                         value={amount}
-                                        onChange={changeIngredientAmount(index)} />
+                                        onChange={onIngredientAmountChange(index)} />
                                     <Autocomplete
                                         options={availableIngredients}
-                                        value={name}
-                                        onChange={changeIngredientName(index)}
-                                        onWildInput={changeIngredientNew(index)} />
+                                        value={ingredient}
+                                        onChange={onIngredientNameChange(index)} />
+                                    {
+                                        isNew &&
+                                        <button className={styles.addIngredientButton}
+                                        onClick={addIngredient.bind(this, index)}>+</button>
+                                    }
                                 </div>
                             )
                         })}

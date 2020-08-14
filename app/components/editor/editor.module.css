@@ -56,6 +56,10 @@ input, select, textarea {
     flex-grow: 1;
 }
 
+.addIngredientButton {
+    margin-left: 3px;
+}
+
 textarea {
     height: 6em;
     resize: vertical;
