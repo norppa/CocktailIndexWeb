@@ -8,6 +8,7 @@ import {
     updateExistingCocktail
 } from '../../modules/rest'
 
+import MethodSelect from './MethodSelect/MethodSelect'
 import GlassSelect from './GlassSelect/GlassSelect'
 
 import styles from './editor.module.css'
@@ -125,8 +126,6 @@ const Editor = (props) => {
         }
     }
 
-    const handleMethodChange = (event) => setMethod(event.target.value)
-
     return (
         <div className={styles.editor}>
 
@@ -173,22 +172,8 @@ const Editor = (props) => {
                 </div>
             </div>
 
-            <div className={styles.method}>
-                <div className={styles.header}>Method</div>
-                <div className={styles.content}>
-                    <select value={method} onChange={handleMethodChange}>
-                        <option value="Shaken">Shaken</option>
-                        <option value="Stirred">Stirred</option>
-                        <option value="Flash Blended">Flash Blended</option>
-                        <option value="Built">Built</option>
-                    </select>
-                </div>
-            </div>
-
-            <GlassSelect
-                value={glass}
-                onChange={setGlass}
-                />
+            <MethodSelect value={method} onChange={setMethod} />
+            <GlassSelect value={glass} onChange={setGlass} />
 
             <div className={styles.info}>
                 <div className={styles.header}>Information</div>

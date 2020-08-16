@@ -1,5 +1,4 @@
 import React from 'react'
-import classnames from 'classnames'
 
 import styles from '../editor.module.css'
 import './GlassSelect.css'
@@ -25,7 +24,8 @@ const GlassSelect = (props) => {
             <div className={styles.content}>
                 {glassTypes.map((type, i) => {
                     return (
-                            <img className={type == props.value ? 'selected' : null}
+                            <img key={i}
+                                className={type == props.value ? 'selected' : null}
                                 src={images[type]}
                                 onClick={handleClick.bind(this, type)}
                             />
