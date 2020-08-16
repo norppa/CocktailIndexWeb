@@ -4,15 +4,14 @@ import React, { useEffect, useState } from 'react'
 import Autocomplete from './Autocomplete'
 import {
     getAvailableIngredients,
-    saveNewIngredient
+    saveNewIngredient,
+    updateExistingCocktail
 } from '../../modules/rest'
 
-import styles from './editor.module.css'
+import GlassSelect from './GlassSelect/GlassSelect'
 
-import shaken from '../../img/shaken.png'
-import stirred from '../../img/stirred.png'
-import built from '../../img/built.png'
-import dot from '../../img/dot.png'
+import styles from './editor.module.css'
+import images from '../../img/images'
 
 const emptyIngredient = { name: '', amount: '' }
 
@@ -23,6 +22,7 @@ const Editor = (props) => {
     const [ingredients, setIngredients] = useState([emptyIngredient])
     const [garnish, setGarnish] = useState('')
     const [method, setMethod] = useState('shaken')
+    const [glass, setGlass] = useState(null)
     const [info, setInfo] = useState('')
 
     const [x, setX] = useState('')
@@ -30,7 +30,7 @@ const Editor = (props) => {
     useEffect(() => {
         loadCocktailInfo()
         const fetchAvailableIngredients = async () => {
-            const result =  await getAvailableIngredients()
+            const result = await getAvailableIngredients()
             setAvailableIngredients(result)
         }
         fetchAvailableIngredients()
@@ -42,19 +42,12 @@ const Editor = (props) => {
     }, [ingredients])
 
     const loadCocktailInfo = () => {
-        if (!props.cocktail) {
-            console.log('new cocktail')
-            setIsNew(true)
-        } else {
-            console.log('edit cocktail')
-            const { name, ingredients, garnish, method, info } = props.cocktail
-            setName(name)
-            setIngredients(ingredients.concat(emptyIngredient))
-            garnish && setGarnish(garnish)
-            method && setMethod(method)
-            info && setInfo(info)
-
-        }
+        const { name, ingredients, garnish, method, info } = props.cocktail
+        setName(name)
+        setIngredients(ingredients.concat(emptyIngredient))
+        garnish && setGarnish(garnish)
+        method && setMethod(method)
+        info && setInfo(info)
     }
 
 
@@ -96,7 +89,6 @@ const Editor = (props) => {
     }
 
     const addIngredient = async (index) => {
-        console.log('adding ingredient')
         const success = await saveNewIngredient(ingredients[index].name)
         if (success) {
             setAvailableIngredients(await getAvailableIngredients())
@@ -110,6 +102,30 @@ const Editor = (props) => {
             }))
         }
     }
+
+    const save = () => {
+        console.log('saving')
+        if (ingredients.some(ingredient => ingredient.isNew)) {
+            console.error('cant save with new ingredients')
+            return
+        }
+
+        const cocktail = { id: props.cocktail.id, name, ingredients: ingredients.slice(0, newIngredients.length - 1), garnish, method, info }
+        console.log('saving', cocktail)
+
+        let result
+        if (!cocktail.id) {
+            result = saveNewCocktail(cocktail)
+        } else {
+            result = updateExistingCocktail(cocktail)
+        }
+
+        if (result.error) {
+            console.error('could not save cocktail', result.error)
+        }
+    }
+
+    const handleMethodChange = (event) => setMethod(event.target.value)
 
     return (
         <div className={styles.editor}>
@@ -129,7 +145,7 @@ const Editor = (props) => {
                             const { name, amount, isNew } = ingredient
                             return (
                                 <div className={styles.ingredientRow} key={index}>
-                                    <img src={dot} className={styles.dot} />
+                                    <img src={images.dot} className={styles.dot} />
                                     <input type="text"
                                         className={styles.ingredientAmountInput}
                                         value={amount}
@@ -141,7 +157,7 @@ const Editor = (props) => {
                                     {
                                         isNew &&
                                         <button className={styles.addIngredientButton}
-                                        onClick={addIngredient.bind(this, index)}>+</button>
+                                            onClick={addIngredient.bind(this, index)}>+</button>
                                     }
                                 </div>
                             )
@@ -159,21 +175,20 @@ const Editor = (props) => {
 
             <div className={styles.method}>
                 <div className={styles.header}>Method</div>
-                <div className={`${styles.content} ${styles.methodIcons}`}>
-                    <img src={shaken}
-                        alt="shaken"
-                        className={method == 'shaken' ? styles.selectedIcon : styles.notSelectedIcon}
-                        onClick={(setMethod.bind(this, 'shaken'))} />
-                    <img src={stirred}
-                        alt="stirred"
-                        className={method == 'stirred' ? styles.selectedIcon : styles.notSelectedIcon}
-                        onClick={setMethod.bind(this, 'stirred')} />
-                    <img src={built}
-                        alt="built"
-                        className={method == 'built' ? styles.selectedIcon : styles.notSelectedIcon}
-                        onClick={setMethod.bind(this, 'built')} />
+                <div className={styles.content}>
+                    <select value={method} onChange={handleMethodChange}>
+                        <option value="Shaken">Shaken</option>
+                        <option value="Stirred">Stirred</option>
+                        <option value="Flash Blended">Flash Blended</option>
+                        <option value="Built">Built</option>
+                    </select>
                 </div>
             </div>
+
+            <GlassSelect
+                value={glass}
+                onChange={setGlass}
+                />
 
             <div className={styles.info}>
                 <div className={styles.header}>Information</div>
@@ -183,7 +198,7 @@ const Editor = (props) => {
             </div>
 
             <div className={styles.buttons}>
-                <button>Save</button>
+                <button onClick={save}>Save</button>
                 <button>Cancel</button>
             </div>
         </div>

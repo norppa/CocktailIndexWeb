@@ -65,27 +65,6 @@ textarea {
     resize: vertical;
 }
 
-.methodIcons {
-    justify-content: 'flex-right';
-}
-
-.methodIcons img {
-    max-width: 60px; 
-    max-height: 60px;
-    padding: 3px;
-    margin-right: 10px;
-}
-
-.selectedIcon {
-    border: 3px solid black;
-    border-radius: 10px;
-}
-
-.notSelectedIcon {
-    border: 3px solid white;
-
-}
-
 .buttons {
     display: flex;
     justify-content: space-around;
@@ -106,3 +85,4 @@ textarea {
 .buttons > button:active {
     background-color: lightgray;
 }
+

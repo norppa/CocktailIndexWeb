@@ -10,8 +10,7 @@ const Autocomplete = (props) => {
     const onUserInput = (event) => {
         const newInput = event.target.value
         if (newInput == '') {
-            setShowSuggestions(false)
-            props.onChange({ name: '' })
+            props.onChange({ name: '', isNew: false })
         } else {
             const filteredSuggestions = props.options.filter(item => {
                 return item.toLowerCase().includes(newInput.toLowerCase())
@@ -19,11 +18,11 @@ const Autocomplete = (props) => {
             setSuggestionList(filteredSuggestions)
             setShowSuggestions(filteredSuggestions.length > 0)
             const isWildInput = !props.options.some(option => option.toLowerCase() == newInput.toLowerCase())
-            console.log('isWildInput', isWildInput)  
+            console.log('isWildInput', isWildInput)
             props.onChange({ name: newInput, isNew: isWildInput })
         }
 
-        
+
     }
 
     const onKeyDown = (event) => {
@@ -47,7 +46,7 @@ const Autocomplete = (props) => {
     }
 
     const onMouseDown = (index) => () => {
-        props.onChange({name: suggestionList[index], isNew: false })
+        props.onChange({ name: suggestionList[index], isNew: false })
         setShowSuggestions(false)
     }
 
@@ -56,14 +55,11 @@ const Autocomplete = (props) => {
     }
 
     const onFocus = () => {
-        console.log('focus', props.value, props.options)
-        if (props.value.name != '') {
-            const filteredSuggestions = props.options.filter(item => {
-                return item.toLowerCase().includes(props.value.name.toLowerCase())
-            })
-            setSuggestionList(filteredSuggestions)
-            setShowSuggestions(filteredSuggestions.length > 0)
-        }
+        const filteredSuggestions = props.options.filter(item => {
+            return item.toLowerCase().includes(props.value.name.toLowerCase())
+        })
+        setSuggestionList(filteredSuggestions)
+        setShowSuggestions(filteredSuggestions.length > 0)
     }
 
     const Suggestions = () => {
@@ -75,7 +71,7 @@ const Autocomplete = (props) => {
                     suggestionList.map((option, i) => {
                         const rowStyles = `${styles.suggestionRow} ${i == selectedSuggestion ? styles.selected : null}`
                         return (
-                            <div key={i} 
+                            <div key={i}
                                 className={rowStyles}
                                 onMouseDown={onMouseDown(i)}>{option}</div>
                         )

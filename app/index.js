@@ -4,6 +4,7 @@ import './index.css'
 
 import Viewer from './components/viewer/Viewer'
 import Editor from './components/editor/Editor'
+import { getCocktails } from './modules/rest'
 
 const App = (props) => {
     const [error, setError] = useState(null)
@@ -12,45 +13,41 @@ const App = (props) => {
     const [editorView, setEditorView] = useState(false)
 
     useEffect(() => {
-        readDatabase()
+        const initializeCocktails = async () => {
+            const dbCocktails = await getCocktails()
+            if (dbCocktails.error) {
+                setError('could not read API, status ' + dbCocktails.error)
+            } else {
+                setCocktails(dbCocktails)
+            }
+        }
+        initializeCocktails()
     }, [])
 
-    const readDatabase = async () => {
-        console.log('readDatabase')
-        const result = await fetch('https://jtthaavi.kapsi.fi/subrosa/cocktail-index')
-        if (result.status != 200) {
-            console.error(result)
-            setError('could not read API, status ' + result.status)
-        } else {
-            const cocktails = await result.json()
-            setCocktails(cocktails)
-        }
+const select = (index) => {
+    if (selected == index) {
+        setSelected(null)
+    } else {
+        setSelected(index)
     }
+}
 
-    const select = (index) => {
-        if (selected == index) {
-            setSelected(null)
-        } else[
-            setSelected(index)
-        ]
-    }
+if (error) {
+    return <div>ERROR: {error}</div>
+}
 
-    if (error) {
-        return <div>ERROR: {error}</div>
-    }
+if (editorView) {
+    return <Editor cocktail={cocktails[selected]} />
+}
 
-    if (editorView) {
-        return <Editor cocktail={cocktails[selected]} />
-    }
-
-    return (<div>
-        <button onClick={setEditorView.bind(this, true)}>edit</button>
-        <Viewer cocktails={cocktails}
-            selectedIdx={selected}
-            select={select}
-            setEditorView={setEditorView} />
-    </div>
-    )
+return (<div>
+    <button onClick={setEditorView.bind(this, true)}>edit</button>
+    <Viewer cocktails={cocktails}
+        selectedIdx={selected}
+        select={select}
+        setEditorView={setEditorView} />
+</div>
+)
 
 }
 

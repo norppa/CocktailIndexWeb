@@ -16,7 +16,7 @@
 .suggestions {
     position: absolute;
     z-index: 1;
-    width: calc(100% + 5px);
+    width: 100%;
     background-color: white;
     padding-top: 3px;
     padding-bottom: 3px;
