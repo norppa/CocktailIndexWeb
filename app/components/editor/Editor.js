@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react'
 
-
+import Input from './Input'
 import Autocomplete from './Autocomplete'
+import constants from './constants'
 import {
     getAvailableIngredients,
     saveNewIngredient,
     updateExistingCocktail
 } from '../../modules/rest'
-
-import MethodSelect from './MethodSelect/MethodSelect'
-import GlassSelect from './GlassSelect/GlassSelect'
 
 import styles from './editor.module.css'
 import images from '../../img/images'
@@ -37,10 +35,6 @@ const Editor = (props) => {
         fetchAvailableIngredients()
 
     }, [])
-
-    useEffect(() => {
-        console.log('ingredients updated', ingredients)
-    }, [ingredients])
 
     const loadCocktailInfo = () => {
         const { name, ingredients, garnish, method, info } = props.cocktail
@@ -126,61 +120,72 @@ const Editor = (props) => {
         }
     }
 
+    const setters = {
+        name: (event) => setName(event.target.value),
+        garnish: (event) => setGarnish(event.target.value),
+        method: (event) => setMethod(event.target.value),
+        glass: (type) => () => setGlass(type),
+        info: (event) => setInfo(event.target.value)
+    }
+
     return (
         <div className={styles.editor}>
 
-            <div className={styles.name}>
-                <div className={styles.header}>Name</div>
-                <div className={styles.content}>
-                    <input type="text" value={name} onChange={evt => setName(evt.target.value)} />
-                </div>
-            </div>
+            <Input name="Name">
+                <input type="text" value={name} onChange={setters.name} />
+            </Input>
 
-            <div className={styles.ingredients}>
-                <div className={styles.header}>Ingredients</div>
-                <div className={styles.content}>
-                    <div>
-                        {ingredients.map((ingredient, index) => {
-                            const { name, amount, isNew } = ingredient
-                            return (
-                                <div className={styles.ingredientRow} key={index}>
-                                    <img src={images.dot} className={styles.dot} />
-                                    <input type="text"
-                                        className={styles.ingredientAmountInput}
-                                        value={amount}
-                                        onChange={onIngredientAmountChange(index)} />
-                                    <Autocomplete
-                                        options={availableIngredients}
-                                        value={ingredient}
-                                        onChange={onIngredientNameChange(index)} />
-                                    {
-                                        isNew &&
-                                        <button className={styles.addIngredientButton}
-                                            onClick={addIngredient.bind(this, index)}>+</button>
-                                    }
-                                </div>
-                            )
-                        })}
-                    </div>
+            <Input name="Ingredients">
+                <div>
+                    {ingredients.map((ingredient, index) => {
+                        const { name, amount, isNew } = ingredient
+                        return (
+                            <div className={styles.ingredientRow} key={index}>
+                                <img src={images.dot} className={styles.dot} />
+                                <input type="text"
+                                    className={styles.ingredientAmountInput}
+                                    value={amount}
+                                    onChange={onIngredientAmountChange(index)} />
+                                <Autocomplete
+                                    options={availableIngredients}
+                                    value={ingredient}
+                                    onChange={onIngredientNameChange(index)} />
+                                {
+                                    isNew &&
+                                    <button className={styles.addIngredientButton}
+                                        onClick={addIngredient.bind(this, index)}>+</button>
+                                }
+                            </div>
+                        )
+                    })}
                 </div>
-            </div>
+            </Input>
 
-            <div className={styles.garnish}>
-                <div className={styles.header}>Garnish</div>
-                <div className={styles.content}>
-                    <input type="text" value={garnish} onChange={evt => setGarnish(evt.target.value)} />
-                </div>
-            </div>
+            <Input name="Garnish">
+                <input type="text" value={garnish} onChange={setters.garnish} />
+            </Input>
 
-            <MethodSelect value={method} onChange={setMethod} />
-            <GlassSelect value={glass} onChange={setGlass} />
+            <Input name="Method">
+                <select value={method} onChange={setters.method}>
+                    {constants.methods.map((method, i) => <option key={i} value={method}>{method}</option>)}
+                </select>
+            </Input>
 
-            <div className={styles.info}>
-                <div className={styles.header}>Information</div>
-                <div className={styles.content}>
-                    <textarea value={info} onChange={evt => setInfo(evt.target.value)} />
-                </div>
-            </div>
+            <Input name="Glassware">
+                {constants.glassTypes.map((type, i) => {
+                    return (
+                        <img key={i}
+                            className={`${styles.glassImg} ${type == glass ? styles.selectedGlassImg : null}`}
+                            src={images[type]}
+                            onClick={setters.glass(type)}
+                        />
+                    )
+                })}
+            </Input>
+
+            <Input name="Information">
+                <textarea value={info} onChange={setters.info} />
+            </Input>
 
             <div className={styles.buttons}>
                 <button onClick={save}>Save</button>

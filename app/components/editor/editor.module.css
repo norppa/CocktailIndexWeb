@@ -86,3 +86,18 @@ textarea {
     background-color: lightgray;
 }
 
+/* GLASS SELECTOR */
+
+.glassImg {
+    box-sizing: border-box;
+    max-width: 60px;
+    margin-left: 10px;
+    border: 2px solid white;
+}
+
+.selectedGlassImg {
+    border: 2px solid black;
+    border-radius: 5px;    
+    box-shadow: 3px 3px gray;
+    outline: none;
+}

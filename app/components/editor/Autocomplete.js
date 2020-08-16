@@ -18,7 +18,6 @@ const Autocomplete = (props) => {
             setSuggestionList(filteredSuggestions)
             setShowSuggestions(filteredSuggestions.length > 0)
             const isWildInput = !props.options.some(option => option.toLowerCase() == newInput.toLowerCase())
-            console.log('isWildInput', isWildInput)
             props.onChange({ name: newInput, isNew: isWildInput })
         }
 
