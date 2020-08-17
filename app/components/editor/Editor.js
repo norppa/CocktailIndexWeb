@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import Input from './Input'
 import Autocomplete from './Autocomplete'
 import {
-    getAvailableIngredients,
     saveNewIngredient,
     getAvailable,
     saveCocktail
