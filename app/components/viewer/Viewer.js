@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
+import { BsPencilSquare } from 'react-icons/bs'
 
 import styles from './viewer.module.css'
 import Cocktail from './Cocktail'
@@ -19,22 +20,26 @@ const Viewer = (props) => {
         }
     }
 
-    return(
-            <div className={styles.Viewer}>
+    return (
+        <div className={styles.Viewer}>
+            <div className={styles.controls}>
                 <input type="text" value={searchInputValue} onChange={handleSearchInputChange} />
-                {props.cocktails
-                    .filter(cocktail => cocktail.name.toLowerCase().includes(searchInputValue.toLowerCase()))
-                    .map((cocktail, index) => {
-                        return (
-                            <Cocktail key={index + cocktail.name}
-                                selected={index == props.selectedIdx}
-                                select={select.bind(this,index)}
-                                cocktail={cocktail} />
-                        )
-                    })}
+                <BsPencilSquare className={styles.editIcon} size={32} onClick={props.openEditor} />
             </div>
-        )
-    
+
+            {props.cocktails
+                .filter(cocktail => cocktail.name.toLowerCase().includes(searchInputValue.toLowerCase()))
+                .map((cocktail, index) => {
+                    return (
+                        <Cocktail key={index + cocktail.name}
+                            selected={index == props.selectedIdx}
+                            select={select.bind(this, index)}
+                            cocktail={cocktail} />
+                    )
+                })}
+        </div>
+    )
+
 }
 
 export default Viewer

@@ -6,6 +6,17 @@
     align-items: center;
 }
 
+.controls {
+    width: 400px;
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 0px;
+}
+
+input {
+    width: 100%;
+}
+
 .Cocktail {
     width: 400px;
     border: 1px solid black;
@@ -30,4 +41,10 @@
 
 .ingredients {
     padding-left: 8px;
+}
+
+.editIcon {
+    vertical-align: bottom;
+    margin-left: 12px;
+    cursor: pointer;
 }

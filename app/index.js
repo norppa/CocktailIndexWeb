@@ -40,6 +40,10 @@ const closeEditorView = (withReload) => {
     setEditorView(false)
 }
 
+const openEditorView = () => {
+    setEditorView(true)
+}
+
 if (error) {
     return <div>ERROR: {error}</div>
 }
@@ -50,11 +54,10 @@ if (editorView) {
 }
 
 return (<div>
-    <button onClick={setEditorView.bind(this, true)}>edit</button>
     <Viewer cocktails={cocktails}
         selectedIdx={selected}
         select={select}
-        setEditorView={setEditorView} />
+        openEditor={openEditorView} />
 </div>
 )
 
