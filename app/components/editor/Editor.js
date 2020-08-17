@@ -6,7 +6,6 @@ import constants from './constants'
 import {
     getAvailableIngredients,
     saveNewIngredient,
-    updateExistingCocktail,
     getAvailable,
     saveCocktail
 } from '../../modules/rest'
@@ -29,30 +28,30 @@ const Editor = (props) => {
     const [info, setInfo] = useState('')
 
     useEffect(() => {
-        loadCocktailInfo()
         const fetchadditionalInfo = async () => {
-            const availableIngredients = await getAvailable('ingredients')
-            setAvailableIngredients(availableIngredients)
-            const availableGlasses = await getAvailable('glasses')
-            setAvailableGlasses(availableGlasses)
+            setAvailableIngredients(await getAvailable('ingredients'))
+            setAvailableGlasses(await getAvailable('glasses'))
             setAvailableMethods(await getAvailable('methods'))
         }
+        
+        loadCocktailInfo()
         fetchadditionalInfo()
 
     }, [])
 
     const loadCocktailInfo = () => {
-        const { id, name, ingredients, garnish, method, glass, info } = props.cocktail
-        id && setId(id)
-        setName(name)
-        setIngredients(ingredients.concat(emptyIngredient))
-        garnish && setGarnish(garnish)
-        glass && setGlass(glass)
-        method && setMethod(method)
-        info && setInfo(info)
+        if (props.cocktail) {
+            const { id, name, ingredients, garnish, method, glass, info } = props.cocktail
+            setId(id)
+            setName(name)
+            setIngredients(ingredients.concat(emptyIngredient))
+            garnish && setGarnish(garnish)
+            glass && setGlass(glass)
+            method && setMethod(method)
+            info && setInfo(info)
+        }
+
     }
-
-
 
     /*
     *  Ingredient list has always an empty item at the end. 
@@ -112,7 +111,7 @@ const Editor = (props) => {
         }
 
         const cocktail = {
-            id: props.cocktail.id ? props.cocktail.id : undefined,
+            id: id ? id : undefined,
             name,
             ingredients: ingredients.slice(0, ingredients.length - 1),
             garnish,
