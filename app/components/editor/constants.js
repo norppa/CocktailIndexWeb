@@ -5,9 +5,9 @@ const methods = [
     'Built'
 ]
 const glassTypes = [
-    'coupe',
-    'oldFashioned',
-    'doubleOldFashioned'
+    'Coupe',
+    'Old Fashioned',
+    'Double Old Fashioned'
 ]
 
 export default {

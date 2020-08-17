@@ -12,15 +12,16 @@ const App = (props) => {
     const [selected, setSelected] = useState(0)
     const [editorView, setEditorView] = useState(false)
 
-    useEffect(() => {
-        const initializeCocktails = async () => {
-            const dbCocktails = await getCocktails()
-            if (dbCocktails.error) {
-                setError('could not read API, status ' + dbCocktails.error)
-            } else {
-                setCocktails(dbCocktails)
-            }
+    const initializeCocktails = async () => {
+        const dbCocktails = await getCocktails()
+        if (dbCocktails.error) {
+            setError('could not read API, status ' + dbCocktails.error)
+        } else {
+            setCocktails(dbCocktails)
         }
+    }
+
+    useEffect(() => {
         initializeCocktails()
     }, [])
 
@@ -32,12 +33,20 @@ const select = (index) => {
     }
 }
 
+const closeEditorView = (withReload) => {
+    if (withReload) {
+        initializeCocktails()
+    }
+    setEditorView(false)
+}
+
 if (error) {
     return <div>ERROR: {error}</div>
 }
 
 if (editorView) {
-    return <Editor cocktail={cocktails[selected]} />
+    return <Editor cocktail={cocktails[selected]}
+                close={closeEditorView} />
 }
 
 return (<div>

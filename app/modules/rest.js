@@ -8,13 +8,12 @@ const getCocktails = async () => {
         return { error: result.status }
     } else {
         const cocktails = await result.json()
-        console.log('result', cocktails)
         return cocktails
     }
 }
 
-const getAvailableIngredients = async () => {
-    const url = baseUrl + '/ingredients'
+const getAvailable = async (type) => {
+    const url = baseUrl + '/' + type
     const result = await fetch(url)
     if (result.status != 200) {
         console.error(result)
@@ -42,25 +41,24 @@ const saveNewIngredient = async (name) => {
     return true
 }
 
-const updateExistingCocktail = async (cocktail) => {
-    console.log('updateExisting', cocktail)
-
+const saveCocktail = async (cocktail) => {
+    const method = cocktail.id ? 'PUT' : 'POST'
     const url = baseUrl
     const result = await fetch(url, {
-        method: 'PUT',
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cocktail)
     })
 
     if (result.status != 200) {
         console.error(result)
-        return { error: result.status }
+        return result.status
     }
 }
 
 export {
     getCocktails,
-    getAvailableIngredients,
+    getAvailable,
     saveNewIngredient,
-    updateExistingCocktail
+    saveCocktail
 }

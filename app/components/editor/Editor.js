@@ -6,7 +6,9 @@ import constants from './constants'
 import {
     getAvailableIngredients,
     saveNewIngredient,
-    updateExistingCocktail
+    updateExistingCocktail,
+    getAvailable,
+    saveCocktail
 } from '../../modules/rest'
 
 import styles from './editor.module.css'
@@ -16,31 +18,36 @@ const emptyIngredient = { name: '', amount: '' }
 
 const Editor = (props) => {
     const [availableIngredients, setAvailableIngredients] = useState([])
-    const [isNew, setIsNew] = useState(false)
+    const [availableGlasses, setAvailableGlasses] = useState([])
+    const [availableMethods, setAvailableMethods] = useState([])
+    const [id, setId] = useState(null)
     const [name, setName] = useState('')
     const [ingredients, setIngredients] = useState([emptyIngredient])
     const [garnish, setGarnish] = useState('')
-    const [method, setMethod] = useState('shaken')
+    const [method, setMethod] = useState('Shaken')
     const [glass, setGlass] = useState(null)
     const [info, setInfo] = useState('')
 
-    const [x, setX] = useState('')
-
     useEffect(() => {
         loadCocktailInfo()
-        const fetchAvailableIngredients = async () => {
-            const result = await getAvailableIngredients()
-            setAvailableIngredients(result)
+        const fetchadditionalInfo = async () => {
+            const availableIngredients = await getAvailable('ingredients')
+            setAvailableIngredients(availableIngredients)
+            const availableGlasses = await getAvailable('glasses')
+            setAvailableGlasses(availableGlasses)
+            setAvailableMethods(await getAvailable('methods'))
         }
-        fetchAvailableIngredients()
+        fetchadditionalInfo()
 
     }, [])
 
     const loadCocktailInfo = () => {
-        const { name, ingredients, garnish, method, info } = props.cocktail
+        const { id, name, ingredients, garnish, method, glass, info } = props.cocktail
+        id && setId(id)
         setName(name)
         setIngredients(ingredients.concat(emptyIngredient))
         garnish && setGarnish(garnish)
+        glass && setGlass(glass)
         method && setMethod(method)
         info && setInfo(info)
     }
@@ -98,26 +105,31 @@ const Editor = (props) => {
         }
     }
 
-    const save = () => {
-        console.log('saving')
+    const save = async () => {
         if (ingredients.some(ingredient => ingredient.isNew)) {
             console.error('cant save with new ingredients')
             return
         }
 
-        const cocktail = { id: props.cocktail.id, name, ingredients: ingredients.slice(0, newIngredients.length - 1), garnish, method, info }
-        console.log('saving', cocktail)
-
-        let result
-        if (!cocktail.id) {
-            result = saveNewCocktail(cocktail)
-        } else {
-            result = updateExistingCocktail(cocktail)
+        const cocktail = {
+            id: props.cocktail.id ? props.cocktail.id : undefined,
+            name,
+            ingredients: ingredients.slice(0, ingredients.length - 1),
+            garnish,
+            method,
+            glass,
+            info
+        }
+        const error = await saveCocktail(cocktail)
+        if (error) {
+            return console.error('could not save cocktail, error status:', error)
         }
 
-        if (result.error) {
-            console.error('could not save cocktail', result.error)
-        }
+        props.close(true)
+    }
+
+    const cancel = () => {
+        props.close(false)
     }
 
     const setters = {
@@ -172,12 +184,12 @@ const Editor = (props) => {
             </Input>
 
             <Input name="Glassware">
-                {constants.glassTypes.map((type, i) => {
+                {availableGlasses.map((availableGlass, i) => {
                     return (
                         <img key={i}
-                            className={`${styles.glassImg} ${type == glass ? styles.selectedGlassImg : null}`}
-                            src={images[type]}
-                            onClick={setters.glass(type)}
+                            className={`${styles.glassImg} ${availableGlass == glass ? styles.selectedGlassImg : null}`}
+                            src={images[availableGlass]}
+                            onClick={setters.glass(availableGlass)}
                         />
                     )
                 })}
@@ -189,7 +201,7 @@ const Editor = (props) => {
 
             <div className={styles.buttons}>
                 <button onClick={save}>Save</button>
-                <button>Cancel</button>
+                <button onClick={cancel}>Cancel</button>
             </div>
         </div>
     )
