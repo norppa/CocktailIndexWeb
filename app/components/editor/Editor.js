@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 
 import Input from './Input'
 import Autocomplete from './Autocomplete'
-import constants from './constants'
 import {
     getAvailableIngredients,
     saveNewIngredient,
@@ -178,7 +177,7 @@ const Editor = (props) => {
 
             <Input name="Method">
                 <select value={method} onChange={setters.method}>
-                    {constants.methods.map((method, i) => <option key={i} value={method}>{method}</option>)}
+                    {availableMethods.map((method, i) => <option key={i} value={method}>{method}</option>)}
                 </select>
             </Input>
 
