@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styles from './viewer.module.css'
+import images from '../../img/images'
 
 const Cocktail = (props) => {
     const [showAdditionalInfo, setShowAdditionalInfo] = useState(false)
@@ -24,15 +25,15 @@ const Cocktail = (props) => {
         if (!props.cocktail.garnish) {
             return null
         }
-        return <div>Garnish: {props.cocktail.garnish}</div>
+        return <div className={styles.ingredients}>Garnish: {props.cocktail.garnish}</div>
     }
 
-    const InstructionsText = () => {
-        if (!props.cocktail.instructions) {
+    const InfoText = () => {
+        if (!props.cocktail.info) {
             return null
         }
 
-        return <div>{props.cocktail.instructions}</div>
+        return <div className={styles.infoText}>{props.cocktail.info}</div>
     }
 
     const AdditionalInfo = () => {
@@ -40,18 +41,31 @@ const Cocktail = (props) => {
             return null
         }
 
-        return (<div className={styles.AdditionalInfo}>
-            {props.cocktail.ingredients.map((ingredient, index) => {
-                return (
-                    <div className={styles.ingredients} key={index + ingredient.name}>
-                        {`\u2022 ${ingredient.amount} ${ingredient.name}`}
-                    </div>
-                )
-            })}
+        return (
+            <div className={styles.additionalInfo}>
+                <div className={styles.row}>
+                    <div className={styles.ingredientsCol}>
+                        {props.cocktail.ingredients.map((ingredient, index) => {
+                            return (
+                                <div className={styles.ingredients} key={index + ingredient.name}>
+                                    {`\u2022 ${ingredient.amount} ${ingredient.name}`}
+                                </div>
+                            )
+                        })}
 
-            <GarnishText />
-            <InstructionsText />
-        </div>)
+                        <GarnishText />
+                    </div>
+
+                    <div className={styles.instructionsCol}>
+                        {props.cocktail.glass && <img className={styles.glassImg} src={images[props.cocktail.glass]} alt={props.cocktail.glass} />}
+                        {props.cocktail.method}
+                    </div>
+
+                </div>
+
+                <InfoText />
+            </div>
+        )
     }
 
     return (

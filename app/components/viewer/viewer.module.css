@@ -35,16 +35,41 @@ input {
     border-width: 2px;
 }
 
-.AdditionalInfo {
+.additionalInfo {
     font-family: 'Alegreya', serif;
 }
 
-.ingredients {
+.additionalInfo .row {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.ingredientsCol {
     padding-left: 8px;
+}
+
+.instructionsCol {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    bottom: 30px;
+    align-items: center;
+    font-weight: bold;
+    margin-bottom: -30px;
+}
+
+.infoText {
+    margin-top: 10px;
 }
 
 .editIcon {
     vertical-align: bottom;
     margin-left: 12px;
     cursor: pointer;
+}
+
+.glassImg {
+    max-width: 60px;
+    margin-bottom: 5px;
 }
