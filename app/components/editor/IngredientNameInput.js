@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import AddNewIngredientDialog from './AddNewIngredientDialog'
 
-const Autocomplete = (props) => {
+const IngredientNameInput = (props) => {
     const [showSuggestions, setShowSuggestions] = useState(false)
     const [selectedSuggestion, setSelectedSuggestion] = useState(0)
     const [suggestionList, setSuggestionList] = useState([])
@@ -11,7 +11,7 @@ const Autocomplete = (props) => {
 
     const onUserInput = (event) => {
         const input = event.target.value
-        const filteredSuggestions = props.options.filter(item => {
+        const filteredSuggestions = props.availableIngredients.filter(item => {
             return item.toLowerCase().includes(input.toLowerCase())
         })
         setSuggestionList(filteredSuggestions)
@@ -20,8 +20,6 @@ const Autocomplete = (props) => {
     }
 
     const onKeyDown = (event) => {
-        
-
         const keyCode = event.keyCode
         if (showSuggestions) {
             if (keyCode == 38) { // UP
@@ -53,18 +51,12 @@ const Autocomplete = (props) => {
     }
 
     const onBlur = (event) => {
-        event.preventDefault()
-        event.stopPropagation()
-        console.log('event', event)
-        const isWild = checkWildInput()
-        if (isWild) {
-            
-        }
+        checkWildInput()
         setShowSuggestions(false)
     }
 
     const onFocus = () => {
-        const filteredSuggestions = props.options.filter(item => {
+        const filteredSuggestions = props.availableIngredients.filter(item => {
             return item.toLowerCase().includes(props.value.toLowerCase())
         })
         setSuggestionList(filteredSuggestions)
@@ -75,7 +67,7 @@ const Autocomplete = (props) => {
         if (props.value == '') {
             return
         }
-        const name = props.options.find(ingredient => ingredient.toLowerCase() == props.value.toLowerCase())
+        const name = props.availableIngredients.find(ingredient => ingredient.toLowerCase() == props.value.toLowerCase())
         if (name) {
             props.onChange({ name })
         } else {
@@ -125,12 +117,12 @@ const Autocomplete = (props) => {
                 isOpen={addNewIngredientDialogIsOpen}
                 ingredient={props.value} 
                 close={closeAddNewIngredientDialog}
-                onIngredientsUpdadte={() => console.log('update ingredients list')} />
+                updateAvailableIngredients={props.updateAvailableIngredients} />
         </div>
     )
 
 }
-export default Autocomplete
+export default IngredientNameInput
 
 const styles = {
     ingredientNameInput: {

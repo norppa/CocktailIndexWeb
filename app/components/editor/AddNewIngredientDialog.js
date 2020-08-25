@@ -14,8 +14,8 @@ const AddNewIngredientDialog = (props) => {
         if (result.error) {
             setError(result.error)
         } else {
-            props.onIngredientsUpdate()
             props.close(false)
+            props.updateAvailableIngredients()
         }
     }
 

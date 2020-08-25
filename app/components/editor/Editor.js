@@ -30,7 +30,7 @@ const Editor = (props) => {
             setAvailableGlasses(await getAvailable('glasses'))
             setAvailableMethods(await getAvailable('methods'))
         }
-        
+
         loadCocktailInfo()
         fetchadditionalInfo()
 
@@ -49,6 +49,8 @@ const Editor = (props) => {
         }
 
     }
+
+    const updateAvailableIngredients = async () => setAvailableIngredients(await getAvailable('ingredients'))
 
     /*
     *  Ingredient list has always an empty item at the end. 
@@ -135,7 +137,8 @@ const Editor = (props) => {
                                     value={amount}
                                     onChange={onIngredientAmountChange(index)} />
                                 <IngredientNameInput
-                                    options={availableIngredients}
+                                    availableIngredients={availableIngredients}
+                                    updateAvailableIngredients={updateAvailableIngredients}
                                     value={name}
                                     onChange={onIngredientNameChange(index)} />
                             </div>

@@ -4,15 +4,12 @@ import { BsPencilSquare } from 'react-icons/bs'
 import styles from './viewer.module.css'
 import Cocktail from './Cocktail'
 
-// props.setSelected ei toimi, koska sen tulee palauttaa null tarpeen tullen
-
 const Viewer = (props) => {
     const [searchInputValue, setSearchInputValue] = useState('')
 
     const handleSearchInputChange = (event) => setSearchInputValue(event.target.value)
 
     const select = (index, setNull) => {
-        console.log('index', index, 'setNull', setNull)
         if (setNull) {
             props.select(null)
         } else {
