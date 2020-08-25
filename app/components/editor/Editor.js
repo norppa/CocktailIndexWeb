@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 
 import Input from './Input'
-import Autocomplete from './Autocomplete'
+import IngredientNameInput from './IngredientNameInput'
 import {
-    saveNewIngredient,
     getAvailable,
     saveCocktail
 } from '../../modules/rest'
@@ -87,27 +86,7 @@ const Editor = (props) => {
         changeIngredient(index, replacement)
     }
 
-    const addIngredient = async (index) => {
-        const success = await saveNewIngredient(ingredients[index].name)
-        if (success) {
-            setAvailableIngredients(await getAvailableIngredients())
-            setIngredients(ingredients => ingredients.map((ingredient, i) => {
-                if (i == index) {
-                    const { name, amount } = ingredients[index]
-                    return { name, amount }
-                } else {
-                    return ingredient
-                }
-            }))
-        }
-    }
-
     const save = async () => {
-        if (ingredients.some(ingredient => ingredient.isNew)) {
-            console.error('cant save with new ingredients')
-            return
-        }
-
         const cocktail = {
             id: id ? id : undefined,
             name,
@@ -147,7 +126,7 @@ const Editor = (props) => {
             <Input name="Ingredients">
                 <div>
                     {ingredients.map((ingredient, index) => {
-                        const { name, amount, isNew } = ingredient
+                        const { name, amount } = ingredient
                         return (
                             <div className={styles.ingredientRow} key={index}>
                                 <img src={images.dot} className={styles.dot} />
@@ -155,15 +134,10 @@ const Editor = (props) => {
                                     className={styles.ingredientAmountInput}
                                     value={amount}
                                     onChange={onIngredientAmountChange(index)} />
-                                <Autocomplete
+                                <IngredientNameInput
                                     options={availableIngredients}
-                                    value={ingredient}
+                                    value={name}
                                     onChange={onIngredientNameChange(index)} />
-                                {
-                                    isNew &&
-                                    <button className={styles.addIngredientButton}
-                                        onClick={addIngredient.bind(this, index)}>+</button>
-                                }
                             </div>
                         )
                     })}

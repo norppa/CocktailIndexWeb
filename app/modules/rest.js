@@ -26,19 +26,18 @@ const getAvailable = async (type) => {
 
 const saveNewIngredient = async (name) => {
     const url = baseUrl + '/ingredient'
-    const body = { name }
+    const body = { ingredient: name }
     const result = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
     })
 
-    if (result.status != 200) {
-        console.error(result)
-        return false
+    if (result.ok) {
+        return {}
+    } else {
+        return { error: await result.text() }
     }
-
-    return true
 }
 
 const saveCocktail = async (cocktail) => {
