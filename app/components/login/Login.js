@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { users } from '../../modules/rest'
 
 import '../../styles/global.css'
 import './Login.css'
@@ -21,11 +22,46 @@ const Login = (props) => {
         setError(false)
     }
 
-    const submit = () => {
+    const submit = async () => {
+        if (!username) return setError('Please enter username.')
+        if (!password) return setError('Please enter password.')
+
         if (mode === 'login') {
-            setError('Could not log in using these credentials. Please check your username and password.')
+            login(username, password)
         } else {
-            setError('Could not register these credentials. Probably username is taken.')
+            register(username, password)
+        }
+    }
+
+    const login = async (username, password) => {
+        const response = await users.login(username, password)
+        if (response.error) {
+            if (response.status === 401) {
+                setError('Could not log in using these credentials. Please check your username and password.')
+            } else {
+                console.error(response.status, response.error)
+                setError('There was a mysterious error that should not exist. Bugger. Please either try again later or contact an administrator if the problem persists.')
+            }
+        } else {
+            setUsername('')
+            setPassword('')
+            props.login(response.token)
+        }
+    }
+
+    const register = async (username, password) => {
+        const response = await users.register(username, password)
+        if (response.error) {
+            if (response.error === 'Username taken') {
+                setError('The username you tried to register is already taken. Please select another username.')
+            } else {
+                console.error(response.status, response.error)
+                setError('There was a mysterious error that should not exist. Bugger. Please either try again later or contact an administrator if the problem persists.')
+            }
+        } else {
+            setUsername('')
+            setPassword('')
+            props.login(response.token)
         }
     }
 

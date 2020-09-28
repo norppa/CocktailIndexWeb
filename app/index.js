@@ -16,6 +16,7 @@ const TOKEN_KEY = '@CocktailIndexToken'
 
 const App = (props) => {
     const [view, setView] = useState('')
+    const [token, setToken] = useState(false)
     const [error, setError] = useState(null)
     const [cocktails, setCocktails] = useState([])
     const [selected, setSelected] = useState(null)
@@ -24,7 +25,7 @@ const App = (props) => {
     useEffect(() => {
         console.log('useEffect')
         const token = localStorage.getItem(TOKEN_KEY)
-        initialize(token)
+        initialize(null)
     }, [])
 
     const initialize = async (token) => {
@@ -33,12 +34,20 @@ const App = (props) => {
             console.log('token is null')
             return setView(views.LOGIN)
         } 
-        const dbCocktails = await getCocktails()
-        if (dbCocktails.error) {
-            setError('could not read API, status ' + dbCocktails.error)
-        } else {
-            setCocktails(dbCocktails)
-        }
+
+
+        // const dbCocktails = await getCocktails()
+        // if (dbCocktails.error) {
+        //     setError('could not read API, status ' + dbCocktails.error)
+        // } else {
+        //     setCocktails(dbCocktails)
+        // }
+    }
+
+    const login = (token) => {
+        localStorage.setItem(TOKEN_KEY, token)
+        setToken(token)
+        setView(views.VIEWER)
     }
 
     const select = (index) => {
@@ -62,7 +71,7 @@ const App = (props) => {
 
     switch (view) {
         case views.LOGIN:
-            return <Login />
+            return <Login login={login}/>
         case views.VIEWER:
             return <div>VIEWER</div>
         case views.EDITOR:
