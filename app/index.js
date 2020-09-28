@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import Login from './components/login/Login'
 import Viewer from './components/viewer/Viewer'
 import Editor from './components/editor/Editor'
-import { getCocktails } from './modules/rest'
+import { usersApi, cocktailApi } from './modules/rest'
 
 const views = {
     LOGIN: 'login',
@@ -19,65 +19,68 @@ const App = (props) => {
     const [token, setToken] = useState(false)
     const [error, setError] = useState(null)
     const [cocktails, setCocktails] = useState([])
-    const [selected, setSelected] = useState(null)
-    const [editorView, setEditorView] = useState(false)
 
     useEffect(() => {
-        console.log('useEffect')
-        const token = localStorage.getItem(TOKEN_KEY)
-        initialize(null)
+        initialize(localStorage.getItem(TOKEN_KEY))
     }, [])
 
     const initialize = async (token) => {
-        console.log('initializing', token)
         if (token === null) {
             console.log('token is null')
             return setView(views.LOGIN)
         } 
 
+        const cocktails = await cocktailApi.get(token)
+        if (cocktails.error) {
+            console.error(cocktails.error)
+            setError('There is something wrong here...')
+            setView(views.ERROR)
+            return undefined
+        }
 
-        // const dbCocktails = await getCocktails()
-        // if (dbCocktails.error) {
-        //     setError('could not read API, status ' + dbCocktails.error)
-        // } else {
-        //     setCocktails(dbCocktails)
-        // }
-    }
-
-    const login = (token) => {
         localStorage.setItem(TOKEN_KEY, token)
-        setToken(token)
+        setCocktails(cocktails)
+        setError(false)
         setView(views.VIEWER)
     }
 
-    const select = (index) => {
-        if (selected == index) {
-            setSelected(null)
+    const login = async (username, password) => {
+        const response = await usersApi.login(username, password)
+        if (response.error) {
+            if (response.status === 401) {
+                setError('Could not log in using these credentials. Please check your username and password.')
+            } else {
+                console.error(response.status, response.error)
+                setError('There was a mysterious error that should not exist. Bugger. Please either try again later or contact an administrator if the problem persists.')
+            }
         } else {
-            setSelected(index)
+            initialize(response.token)
         }
     }
-
-    const closeEditorView = (withReload) => {
-        if (withReload) {
-            initializeCocktails()
+    
+    const register = async (username, password) => {
+        const response = await usersApi.register(username, password)
+        if (response.error) {
+            if (response.error === 'Username taken') {
+                setError('The username you tried to register is already taken. Please select another username.')
+            } else {
+                console.error(response.status, response.error)
+                setError('There was a mysterious error that should not exist. Bugger. Please either try again later or contact an administrator if the problem persists.')
+            }
+        } else {
+            initialize(response.token)
         }
-        setEditorView(false)
-    }
-
-    const openEditorView = () => {
-        setEditorView(true)
     }
 
     switch (view) {
         case views.LOGIN:
-            return <Login login={login}/>
+            return <Login login={login} register={register} error={error} />
         case views.VIEWER:
-            return <div>VIEWER</div>
+            return <Viewer cocktails={cocktails} />
         case views.EDITOR:
             return <div>EDITOR</div>
         case views.ERROR:
-            return <div>ERROR</div>
+            return <div>ERROR: {error}</div>
         default:
             return <div>LOADING</div>
     }

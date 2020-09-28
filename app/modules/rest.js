@@ -109,14 +109,40 @@ const register = async (username, password) => {
     }
 }
 
+const getCocktails = async (token) => {
+    const url = baseUrl + '/cocktails'
+    const request = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    }
+
+    try {
+        const result = await fetch(url, request)
+        if (result.status === 200) {
+            console.log('result', result)
+            return await result.json()
+        }
+        throw new Error(result)
+    } catch (error) {
+        console.error(error)
+        return { error }
+    }
+}
+
 module.exports = {
     // getCocktails,
     // getAvailable,
     // saveNewIngredient,
     // saveCocktail,
 
-    users: {
+    usersApi: {
         login,
         register
+    },
+    cocktailApi: {
+        get: getCocktails
     }
 }

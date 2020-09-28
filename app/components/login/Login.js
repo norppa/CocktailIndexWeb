@@ -26,42 +26,11 @@ const Login = (props) => {
         if (!username) return setError('Please enter username.')
         if (!password) return setError('Please enter password.')
 
+        setError(false)
         if (mode === 'login') {
-            login(username, password)
+            props.login(username, password)
         } else {
-            register(username, password)
-        }
-    }
-
-    const login = async (username, password) => {
-        const response = await users.login(username, password)
-        if (response.error) {
-            if (response.status === 401) {
-                setError('Could not log in using these credentials. Please check your username and password.')
-            } else {
-                console.error(response.status, response.error)
-                setError('There was a mysterious error that should not exist. Bugger. Please either try again later or contact an administrator if the problem persists.')
-            }
-        } else {
-            setUsername('')
-            setPassword('')
-            props.login(response.token)
-        }
-    }
-
-    const register = async (username, password) => {
-        const response = await users.register(username, password)
-        if (response.error) {
-            if (response.error === 'Username taken') {
-                setError('The username you tried to register is already taken. Please select another username.')
-            } else {
-                console.error(response.status, response.error)
-                setError('There was a mysterious error that should not exist. Bugger. Please either try again later or contact an administrator if the problem persists.')
-            }
-        } else {
-            setUsername('')
-            setPassword('')
-            props.login(response.token)
+            props.register(username, password)
         }
     }
 
@@ -74,7 +43,7 @@ const Login = (props) => {
                 <input type="text" placeholder="Username" value={username} onChange={onChange('username')} />
                 <input type="password" placeholder="Password" value={password} onChange={onChange('password')} />
                 <button onClick={submit}>{message('Log In', 'Register')}</button>
-                <div className="error">{error}</div>
+                <div className="error">{error || props.error}</div>
             </div>
             <div className="box">
                 <span>
