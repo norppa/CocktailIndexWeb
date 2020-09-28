@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:wght@500&family=Cherry+Cream+Soda&display=swap');
+
+body {
+    margin: 0;
+    min-height: 100%;
+    font-family: 'Alegreya', serif;
+    font-size: 14pt;
+}
+
+h1 {
+    font-family: 'Cherry Cream Soda';
+}
+
+input {
+    font-family: 'Alegreya', serif;
+    font-size: 14pt;
+    padding-top: 3px;
+    padding-left: 5px;
+    border-radius: 5px;
+    border: 1px solid black;
+    outline: none;
+}
+
+button {
+    border: 2px solid black;
+    border-radius: 5px;
+    background-color: white;
+    
+    font-family: 'Cherry Cream Soda';
+    font-size: 18pt;
+    
+    box-shadow: 2px 2px gray;
+    outline: none;
+    cursor: pointer;
+}
+
+button:active {
+    background-color: #F5F5F5;
+}
