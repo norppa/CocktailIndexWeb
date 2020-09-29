@@ -132,6 +132,31 @@ const getCocktails = async (token) => {
     }
 }
 
+const getAvailable = async (type, token) => {
+    const url = baseUrl + '/' + type
+    const request = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    }
+    try {
+        const result = await fetch(url, request)
+        if (result.status != 200) {
+            console.error(result)
+            return []
+        } else {
+            const resultJson = await result.json()
+            return resultJson
+        }
+    } catch (error) {
+        console.log('error', error)
+        return { error: error, msg: 'Failed to fetch ' + type }
+    }
+    
+}
+
 module.exports = {
     // getCocktails,
     // getAvailable,
@@ -143,6 +168,7 @@ module.exports = {
         register
     },
     cocktailApi: {
-        get: getCocktails
-    }
+        get: getCocktails,
+        getAvailable
+    },
 }

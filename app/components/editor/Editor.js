@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from 'react'
 
-import Input from './Input'
 import IngredientNameInput from './IngredientNameInput'
+import SelectGlassModal from './GlassSelectorModal'
 import {
-    getAvailable,
     saveCocktail
 } from '../../modules/rest'
 
-import styles from './editor.module.css'
 import images from '../../img/images'
+import '../../styles/global.css'
+import './Editor.css'
 
 const emptyIngredient = { name: '', amount: '' }
 
+const Input = (props) => (
+    <div className="input">
+        <h2>{props.name}</h2>
+        <div className="content">
+            {props.children}
+        </div>
+    </div>
+)
+
 const Editor = (props) => {
-    const [availableIngredients, setAvailableIngredients] = useState([])
-    const [availableGlasses, setAvailableGlasses] = useState([])
-    const [availableMethods, setAvailableMethods] = useState([])
     const [id, setId] = useState(null)
     const [name, setName] = useState('')
     const [ingredients, setIngredients] = useState([emptyIngredient])
@@ -24,19 +30,9 @@ const Editor = (props) => {
     const [glass, setGlass] = useState(null)
     const [info, setInfo] = useState('')
 
+    const [selectGlassModalOpen, setSelectGlassModalOpen] = useState(false)
+
     useEffect(() => {
-        const fetchadditionalInfo = async () => {
-            setAvailableIngredients(await getAvailable('ingredients'))
-            setAvailableGlasses(await getAvailable('glasses'))
-            setAvailableMethods(await getAvailable('methods'))
-        }
-
-        loadCocktailInfo()
-        fetchadditionalInfo()
-
-    }, [])
-
-    const loadCocktailInfo = () => {
         if (props.cocktail) {
             const { id, name, ingredients, garnish, method, glass, info } = props.cocktail
             setId(id)
@@ -48,9 +44,7 @@ const Editor = (props) => {
             info && setInfo(info)
         }
 
-    }
-
-    const updateAvailableIngredients = async () => setAvailableIngredients(await getAvailable('ingredients'))
+    }, [])
 
     /*
     *  Ingredient list has always an empty item at the end. 
@@ -98,47 +92,40 @@ const Editor = (props) => {
             glass,
             info
         }
-        const error = await saveCocktail(cocktail)
-        if (error) {
-            return console.error('could not save cocktail, error status:', error)
-        }
-
-        props.close(true)
-    }
-
-    const cancel = () => {
-        props.close(false)
+        props.save(cocktail)
     }
 
     const setters = {
         name: (event) => setName(event.target.value),
         garnish: (event) => setGarnish(event.target.value),
         method: (event) => setMethod(event.target.value),
-        glass: (type) => () => setGlass(type),
         info: (event) => setInfo(event.target.value)
     }
 
-    return (
-        <div className={styles.editor}>
+    const selectGlass = (glass) => {
+        setGlass(glass)
+        setSelectGlassModalOpen(false)
+    }
 
+    return (
+        <div className="Editor">
             <Input name="Name">
                 <input type="text" value={name} onChange={setters.name} />
             </Input>
 
             <Input name="Ingredients">
-                <div>
+                <div className="ingredients">
                     {ingredients.map((ingredient, index) => {
                         const { name, amount } = ingredient
                         return (
-                            <div className={styles.ingredientRow} key={index}>
-                                <img src={images.dot} className={styles.dot} />
+                            <div className="ingredientRow" key={index}>
+                                <img src={images.dot} className="dot" />
                                 <input type="text"
-                                    className={styles.ingredientAmountInput}
+                                    className="ingredientAmountInput"
                                     value={amount}
                                     onChange={onIngredientAmountChange(index)} />
                                 <IngredientNameInput
-                                    availableIngredients={availableIngredients}
-                                    updateAvailableIngredients={updateAvailableIngredients}
+                                    availableIngredients={props.availableIngredients}
                                     value={name}
                                     onChange={onIngredientNameChange(index)} />
                             </div>
@@ -153,29 +140,27 @@ const Editor = (props) => {
 
             <Input name="Method">
                 <select value={method} onChange={setters.method}>
-                    {availableMethods.map((method, i) => <option key={i} value={method}>{method}</option>)}
+                    {props.availableMethods.map((method, i) => <option key={i} value={method}>{method}</option>)}
                 </select>
             </Input>
 
             <Input name="Glassware">
-                {availableGlasses.map((availableGlass, i) => {
-                    return (
-                        <img key={i}
-                            className={`${styles.glassImg} ${availableGlass == glass ? styles.selectedGlassImg : null}`}
-                            src={images[availableGlass]}
-                            onClick={setters.glass(availableGlass)}
-                        />
-                    )
-                })}
+                <div className="glassInfo">
+                    <img src={images[glass]} className="glassImg" onClick={setSelectGlassModalOpen.bind(this, true)} />{glass}
+                </div>
             </Input>
+            <SelectGlassModal 
+                isOpen={selectGlassModalOpen} 
+                availableGlasses={props.availableGlasses}
+                select={selectGlass} />
 
             <Input name="Information">
                 <textarea value={info} onChange={setters.info} />
             </Input>
 
-            <div className={styles.buttons}>
+            <div className="buttons">
                 <button onClick={save}>Save</button>
-                <button onClick={cancel}>Cancel</button>
+                <button onClick={props.close}>Cancel</button>
             </div>
         </div>
     )

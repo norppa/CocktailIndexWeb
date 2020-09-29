@@ -1,11 +1,9 @@
 import React, { useState, useRef } from 'react'
-import AddNewIngredientDialog from './AddNewIngredientDialog'
 
 const IngredientNameInput = (props) => {
     const [showSuggestions, setShowSuggestions] = useState(false)
     const [selectedSuggestion, setSelectedSuggestion] = useState(0)
     const [suggestionList, setSuggestionList] = useState([])
-    const [addNewIngredientDialogIsOpen, setAddNewIngredientDialogIsOpen] = useState(false)
 
     const nameInput = useRef(null)
 
@@ -31,7 +29,7 @@ const IngredientNameInput = (props) => {
                 setSelectedSuggestion(newSelectedSuggestion)
                 props.onChange({ name: suggestionList[newSelectedSuggestion] })
             } else if (keyCode == 13) { // ENTER
-                props.onChange({ name: suggestionList[selectedSuggestion] })
+                // props.onChange({ name: suggestionList[selectedSuggestion] })
                 setShowSuggestions(false)
             } else if (keyCode == 9) { // TAB
                 setShowSuggestions(false)
@@ -39,7 +37,6 @@ const IngredientNameInput = (props) => {
         } else {
             if (keyCode == 13) { // ENTER 
                 event.preventDefault()
-                checkWildInput()
             }
         }
 
@@ -51,7 +48,6 @@ const IngredientNameInput = (props) => {
     }
 
     const onBlur = (event) => {
-        checkWildInput()
         setShowSuggestions(false)
     }
 
@@ -61,25 +57,6 @@ const IngredientNameInput = (props) => {
         })
         setSuggestionList(filteredSuggestions)
         setShowSuggestions(filteredSuggestions.length > 0)
-    }
-
-    const checkWildInput = () => {
-        if (props.value == '') {
-            return
-        }
-        const name = props.availableIngredients.find(ingredient => ingredient.toLowerCase() == props.value.toLowerCase())
-        if (name) {
-            props.onChange({ name })
-        } else {
-            setAddNewIngredientDialogIsOpen(true)
-        }
-    }
-
-    const closeAddNewIngredientDialog = (keepFocus) => {
-        setAddNewIngredientDialogIsOpen(false)
-        if (keepFocus) {
-            nameInput.current.focus()
-        }
     }
 
     const Suggestions = () => {
@@ -113,11 +90,7 @@ const IngredientNameInput = (props) => {
                 onFocus={onFocus}
             />
             <Suggestions />
-            <AddNewIngredientDialog 
-                isOpen={addNewIngredientDialogIsOpen}
-                ingredient={props.value} 
-                close={closeAddNewIngredientDialog}
-                updateAvailableIngredients={props.updateAvailableIngredients} />
+
         </div>
     )
 
@@ -126,13 +99,7 @@ export default IngredientNameInput
 
 const styles = {
     ingredientNameInput: {
-        flexGrow: 1,
         position: 'relative',
-    },
-    input: {
-        boxSizing: 'border-box',
-        width: '100%',
-        outline: 'none',
     },
     suggestions: {
         position: 'absolute',

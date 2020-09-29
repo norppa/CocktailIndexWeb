@@ -16,7 +16,7 @@ const Viewer = (props) => {
 
     return (
         <div className="Viewer">
-                <input type="text" placeholder="Search" value={searchInputValue} onChange={handleSearchInputChange} />
+            <input type="text" placeholder="Search" value={searchInputValue} onChange={handleSearchInputChange} />
 
             <div className="cocktails" ref={cocktailsRef}>
                 {props.cocktails

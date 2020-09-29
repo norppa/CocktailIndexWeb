@@ -7,11 +7,17 @@ body {
     font-size: 14pt;
 }
 
-h1 {
+h1, h2 {
     font-family: 'Cherry Cream Soda';
+    font-size: 18pt;
 }
 
-input {
+h2 {
+    font-weight: normal;
+    margin: 0;
+}
+
+input, select, textarea {
     font-family: 'Alegreya', serif;
     font-size: 14pt;
     padding-top: 3px;
@@ -19,6 +25,7 @@ input {
     border-radius: 5px;
     border: 1px solid black;
     outline: none;
+    flex-grow: 1;
 }
 
 button {

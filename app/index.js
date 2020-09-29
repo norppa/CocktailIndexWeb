@@ -19,6 +19,11 @@ const App = (props) => {
     const [token, setToken] = useState(false)
     const [error, setError] = useState(null)
     const [cocktails, setCocktails] = useState([])
+    const [selected, setSelected] = useState(null)
+
+    const [availableMethods, setAvailableMethods] = useState([])
+    const [availableGlasses, setAvailableGlasses] = useState([])
+    const [availableIngredients, setAvailableIngredients] = useState([])
 
     useEffect(() => {
         initialize(localStorage.getItem(TOKEN_KEY))
@@ -30,6 +35,7 @@ const App = (props) => {
             return setView(views.LOGIN)
         }
 
+
         const cocktails = await cocktailApi.get(token)
         if (cocktails.error) {
             console.error(cocktails.error)
@@ -38,7 +44,9 @@ const App = (props) => {
             return undefined
         }
 
+
         localStorage.setItem(TOKEN_KEY, token)
+        setToken(token)
         setCocktails(cocktails)
         setError(false)
         setView(views.VIEWER)
@@ -73,15 +81,27 @@ const App = (props) => {
     }
 
     const cocktailActions = {
-        edit: (id) => {
-            if (!id) {
-                console.log('open new editor')
-            } else {
-                console.log('edit existing', id)
-            }
+        edit: async (id) => {
+            const availableMethods = await cocktailApi.getAvailable('methods', token)
+            const availableGlasses = await cocktailApi.getAvailable('glasses', token)
+            const availableIngredients = Array.from(cocktails.reduce((acc, cur) => {
+                cur.ingredients.forEach(ingredient => acc.add(ingredient.name))
+                return acc
+            }, new Set()))
+            
+            setAvailableMethods(availableMethods)
+            setAvailableGlasses(availableGlasses)
+            setAvailableIngredients(availableIngredients)
+            setSelected(cocktails.find(cocktail => cocktail.id === id))
+            setView(views.EDITOR)
+
         },
         remove: (id) => {
             console.log('delete', id)
+        },
+        save: (cocktail) => {
+            console.log('saving cocktail', cocktail)
+            setView(views.VIEWER)
         }
     }
 
@@ -91,7 +111,14 @@ const App = (props) => {
         case views.VIEWER:
             return <Viewer cocktails={cocktails} actions={cocktailActions} />
         case views.EDITOR:
-            return <div>EDITOR</div>
+            return <Editor
+                cocktail={selected}
+                availableMethods={availableMethods}
+                availableGlasses={availableGlasses}
+                availableIngredients={availableIngredients}
+                save={cocktailActions.save}
+                close={setView.bind(this, views.VIEWER)} />
+
         case views.ERROR:
             return <div>ERROR: {error}</div>
         default:

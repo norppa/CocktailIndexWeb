@@ -37,7 +37,7 @@ h1 {
     font-size: 40pt;
 }
 
-input {
+.loginInfo {
     border: 2px solid black;
     width: 300px;
     font-size: 20pt;
@@ -45,7 +45,7 @@ input {
     padding: 5px;
 }
 
-input:focus {
+.loginInfo:focus {
     background-color: #F5F5F5;
 }
 
