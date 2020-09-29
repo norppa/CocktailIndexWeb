@@ -17,6 +17,12 @@
     padding: 4px 20px;
 }
 
+.cocktails {
+    width: 100%;
+    box-sizing: border-box;
+
+}
+
 input {
     padding-left: 10px;
 }

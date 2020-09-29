@@ -28,7 +28,7 @@ const App = (props) => {
         if (token === null) {
             console.log('token is null')
             return setView(views.LOGIN)
-        } 
+        }
 
         const cocktails = await cocktailApi.get(token)
         if (cocktails.error) {
@@ -57,7 +57,7 @@ const App = (props) => {
             initialize(response.token)
         }
     }
-    
+
     const register = async (username, password) => {
         const response = await usersApi.register(username, password)
         if (response.error) {
@@ -72,11 +72,24 @@ const App = (props) => {
         }
     }
 
+    const cocktailActions = {
+        edit: (id) => {
+            if (!id) {
+                console.log('open new editor')
+            } else {
+                console.log('edit existing', id)
+            }
+        },
+        remove: (id) => {
+            console.log('delete', id)
+        }
+    }
+
     switch (view) {
         case views.LOGIN:
             return <Login login={login} register={register} error={error} />
         case views.VIEWER:
-            return <Viewer cocktails={cocktails} />
+            return <Viewer cocktails={cocktails} actions={cocktailActions} />
         case views.EDITOR:
             return <div>EDITOR</div>
         case views.ERROR:
