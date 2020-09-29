@@ -1,0 +1,22 @@
+.Viewer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    width: 400px;
+    margin: auto;
+}
+
+.controls {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 4px 20px;
+}
+
+input {
+    padding-left: 10px;
+}

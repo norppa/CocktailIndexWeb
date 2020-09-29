@@ -1,77 +1,47 @@
-import React, { useEffect, useState } from 'react'
-import styles from './viewer.module.css'
+import React, { useState } from 'react'
+
 import images from '../../img/images'
+import '../../styles/global.css'
+import './Cocktail.css'
 
 const Cocktail = (props) => {
-    const [showAdditionalInfo, setShowAdditionalInfo] = useState(false)
+    const [expanded, setExpanded] = useState(false)
 
-    const handleClick = () => {
-        if (props.selected && !showAdditionalInfo) {
-            // impossible by logic
-            setShowAdditionalInfo(true)
-        } else if (props.selected && showAdditionalInfo) {
-            setShowAdditionalInfo(false)
-            props.select()
-        } else if (!props.selected && !showAdditionalInfo) {
-            setShowAdditionalInfo(true)
-            props.select()
-        } else if (!props.selected && showAdditionalInfo) {
-            setShowAdditionalInfo(false)
-            props.select(true)
-        }
-    }
+    const toggleExpanded = () => setExpanded(expanded => !expanded)
 
-    const GarnishText = () => {
-        if (!props.cocktail.garnish) {
-            return null
-        }
-        return <div className={styles.ingredients}>Garnish: {props.cocktail.garnish}</div>
-    }
+    const GarnishText = () => props.cocktail.garnish && <div>Garnish: {props.cocktail.garnish}</div>
+    const InfoText = () => props.cocktail.info && <div className="info">{props.cocktail.info}</div>
+    const GlassIcon = () => props.cocktail.glass && <img className="glassImg" src={images[props.cocktail.glass]} alt={props.cocktail.glass} />
 
-    const InfoText = () => {
-        if (!props.cocktail.info) {
-            return null
-        }
+    const Expanded = () => (
+        <div className="Cocktail expanded" onClick={toggleExpanded}>
+            <h1 className="header">{props.cocktail.name}</h1>
+            <div className="ingredients">
+                {props.cocktail.ingredients.map((ingredient, index) => {
+                    return (
+                        <div key={index + ingredient.name}>
+                            {`\u2022 ${ingredient.amount} ${ingredient.name}`}
+                        </div>
+                    )
+                })}
 
-        return <div className={styles.infoText}>{props.cocktail.info}</div>
-    }
-
-    const AdditionalInfo = () => {
-        if (!showAdditionalInfo) {
-            return null
-        }
-
-        return (
-            <div className={styles.additionalInfo}>
-                <div className={styles.row}>
-                    <div className={styles.ingredientsCol}>
-                        {props.cocktail.ingredients.map((ingredient, index) => {
-                            return (
-                                <div className={styles.ingredients} key={index + ingredient.name}>
-                                    {`\u2022 ${ingredient.amount} ${ingredient.name}`}
-                                </div>
-                            )
-                        })}
-
-                        <GarnishText />
-                    </div>
-
-                    <div className={styles.instructionsCol}>
-                        {props.cocktail.glass && <img className={styles.glassImg} src={images[props.cocktail.glass]} alt={props.cocktail.glass} />}
-                        {props.cocktail.method}
-                    </div>
-
-                </div>
-
-                <InfoText />
+                <GarnishText />
             </div>
-        )
-    }
+
+            <div className="instructions">
+                <GlassIcon />
+                {props.cocktail.method}
+            </div>
+
+            <InfoText />
+        </div>
+    )
+
+    if (expanded) return <Expanded />
 
     return (
-        <div className={`${styles.Cocktail} ${props.selected ? styles.selected : null}`} onClick={handleClick}>
-            <h1>{props.cocktail.name}</h1>
-            <AdditionalInfo />
+        <div className="Cocktail" onClick={toggleExpanded}>
+            <h1 className="header">{props.cocktail.name}</h1>
         </div>
     )
 
