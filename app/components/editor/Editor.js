@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { FaCaretDown } from 'react-icons/fa'
 
 import IngredientNameInput from './IngredientNameInput'
 import SelectGlassModal from './GlassSelectorModal'
@@ -175,7 +176,9 @@ const Editor = (props) => {
 
             <Input name="Glassware">
                 <div className="glassInfo" onClick={setSelectGlassModalOpen.bind(this, true)}>
-                    <img src={images[glass]} className="glassImg" />{glass}
+                    <img src={images[glass]} className="glassImg" />
+                    {glass}
+                    <FaCaretDown />
                 </div>
             </Input>
             <SelectGlassModal
