@@ -9,6 +9,11 @@ import './Editor.css'
 
 const emptyIngredient = { name: '', amount: '' }
 
+const alerts = {
+    name_required: 'This cocktail needs a name!',
+    ingredients_required: 'This cocktail needs some ingredients!'
+}
+
 const Input = (props) => (
     <div className="input">
         <h2>{props.name}</h2>
@@ -28,6 +33,7 @@ const Editor = (props) => {
     const [info, setInfo] = useState('')
 
     const [selectGlassModalOpen, setSelectGlassModalOpen] = useState(false)
+    const [activeAlerts, setActiveAlerts] = useState([])
 
     useEffect(() => {
         if (props.cocktail) {
@@ -42,6 +48,14 @@ const Editor = (props) => {
         }
 
     }, [])
+
+    useEffect(() => {
+        if (name) removeAlert('name_required')
+    }, [name])
+
+    useEffect(() => {
+        if (ingredients.length > 1) removeAlert('ingredients_required')
+    }, [ingredients])
 
     /*
     *  Ingredient list has always an empty item at the end. 
@@ -80,6 +94,13 @@ const Editor = (props) => {
     }
 
     const save = async () => {
+        const newActiveAlerts = []
+        if (!name) newActiveAlerts.push('name_required')
+        if (ingredients.length === 1) newActiveAlerts.push('ingredients_required')
+        if (newActiveAlerts.length > 0) {
+            return setActiveAlerts(newActiveAlerts)
+        }
+
         const cocktail = {
             id: id ? id : undefined,
             name,
@@ -104,13 +125,23 @@ const Editor = (props) => {
         setSelectGlassModalOpen(false)
     }
 
+    const Alert = (props) => {
+        if (activeAlerts.includes(props.type)) {
+            return <div className="alert">{alerts[props.type]}</div>
+        }
+        return null
+    }
+
+    const removeAlert = (name) => setActiveAlerts(activeAlerts => activeAlerts.filter(activeAlert => activeAlert !== name))
+
     return (
         <div className="Editor">
             <Input name="Name">
                 <input type="text" value={name} onChange={setters.name} />
             </Input>
+            <Alert type="name_required" />
 
-            <Input name="Ingredients">
+            <Input name="Ingredients" onFocus={() => console.log('foc')}>
                 <div className="ingredients">
                     {ingredients.map((ingredient, index) => {
                         const { name, amount } = ingredient
@@ -130,6 +161,7 @@ const Editor = (props) => {
                     })}
                 </div>
             </Input>
+            <Alert type="ingredients_required" />
 
             <Input name="Garnish">
                 <input type="text" value={garnish} onChange={setters.garnish} />

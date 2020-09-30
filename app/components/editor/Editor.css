@@ -61,11 +61,16 @@ textarea {
     justify-content: space-around;
 }
 
-.buttons > * {
+.buttons>* {
     margin: 20px;
 }
 
-/* GLASS SELECTOR */
+.alert {
+    color: red;
+    width: 100%;
+    padding-left: 100px;
+    margin-top: 10px;
+}
 
 .glassImg {
     box-sizing: border-box;
@@ -80,4 +85,3 @@ textarea {
     box-shadow: 3px 3px gray;
     outline: none;
 }
-
