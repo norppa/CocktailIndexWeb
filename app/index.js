@@ -97,10 +97,15 @@ const App = (props) => {
 
         },
         remove: (id) => {
-            console.log('delete', id)
+            const result = cocktailApi.del(id, token)
+            setCocktails(cocktails => cocktails.filter(cocktail => cocktail.id !== id))
         },
-        save: (cocktail) => {
-            console.log('saving cocktail', cocktail)
+        save: async (cocktail) => {
+            const result = await cocktailApi.set(cocktail, token)
+            const newCocktails = cocktail.id 
+                ? cocktails.map(c => c.id === cocktail.id ? result : c)
+                : cocktails.concat(result)
+            setCocktails(newCocktails)
             setView(views.VIEWER)
         }
     }

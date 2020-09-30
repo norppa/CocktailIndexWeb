@@ -157,6 +157,55 @@ const getAvailable = async (type, token) => {
     
 }
 
+const saveCocktail = async (cocktail, token) => {
+    const url = baseUrl + '/cocktails'
+    try {
+        const result = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify(cocktail)
+        })
+    
+        if (result.status != 200) {
+            console.error(result)
+            return result.status
+        } else {
+            const resultJson = await result.json()
+            
+            return { ...resultJson.value, id: resultJson.key }
+        }
+    } catch (error) {
+        console.log('error', error)
+        return {error}
+    }
+}
+
+const deleteCocktail = async (cocktailId, token) => {
+    const url = baseUrl + '/cocktails'
+    const request = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify({ key: cocktailId })
+    }
+    try {
+        const result = await fetch(url, request)
+        if (result.status != 200) {
+            throw new Error(result)
+        }
+    } catch (error) {
+        console.error('DELETE COCKTAIL ERROR:', error)
+        return { error }
+    }
+    return {}
+}
+
 module.exports = {
     // getCocktails,
     // getAvailable,
@@ -169,6 +218,8 @@ module.exports = {
     },
     cocktailApi: {
         get: getCocktails,
+        set: saveCocktail,
+        del: deleteCocktail,
         getAvailable
     },
 }

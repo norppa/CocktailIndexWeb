@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react'
 
 import IngredientNameInput from './IngredientNameInput'
 import SelectGlassModal from './GlassSelectorModal'
-import {
-    saveCocktail
-} from '../../modules/rest'
 
 import images from '../../img/images'
 import '../../styles/global.css'
@@ -145,12 +142,12 @@ const Editor = (props) => {
             </Input>
 
             <Input name="Glassware">
-                <div className="glassInfo">
-                    <img src={images[glass]} className="glassImg" onClick={setSelectGlassModalOpen.bind(this, true)} />{glass}
+                <div className="glassInfo" onClick={setSelectGlassModalOpen.bind(this, true)}>
+                    <img src={images[glass]} className="glassImg" />{glass}
                 </div>
             </Input>
-            <SelectGlassModal 
-                isOpen={selectGlassModalOpen} 
+            <SelectGlassModal
+                isOpen={selectGlassModalOpen}
                 availableGlasses={props.availableGlasses}
                 select={selectGlass} />
 
