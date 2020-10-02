@@ -39,7 +39,6 @@ const Login = (props) => {
     return (
         <div className="Login">
             <div className="box">
-                <h1>Cocktail Index</h1>
                 <input className="loginInfo" type="text" placeholder="Username" value={username} onChange={onChange('username')} />
                 <input className="loginInfo" type="password" placeholder="Password" value={password} onChange={onChange('password')} />
                 <button onClick={submit}>{message('Log In', 'Register')}</button>

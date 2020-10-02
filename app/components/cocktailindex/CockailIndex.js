@@ -74,6 +74,7 @@ const CocktailIndex = (props) => {
     const logout = () => {
         localStorage.removeItem(TOKEN_KEY)
         setToken(false)
+        setUsername('')
         setCocktails([])
         setError(false)
         setView(views.LOGIN)
@@ -152,6 +153,7 @@ const CocktailIndex = (props) => {
             setClicked(true)
             setTimeout(() => setClicked(false), 3000)
         }
+        if (!username) return null
 
         return clicked
             ? <span className="user" onClick={logout}>log out?</span>

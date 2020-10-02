@@ -1,15 +1,8 @@
 .Login {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    overflow: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 20px;
-    background-color: #C0C0C0;
 }
 
 .box {
@@ -17,8 +10,8 @@
     flex-direction: column;
     align-items: center;
     width: 600px;
-    border: 2px solid black;
-    border-radius: 5px;
+    border: 1px solid black;
+    border-radius: 20px;
     background-color: white;
     padding: 40px;
     margin: 10px;
@@ -38,7 +31,6 @@ h1 {
 }
 
 .loginInfo {
-    border: 2px solid black;
     width: 300px;
     font-size: 20pt;
     margin: 5px;
