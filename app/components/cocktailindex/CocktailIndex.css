@@ -1,0 +1,40 @@
+.frame {
+    border-bottom: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+}
+
+.frameContents {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px;
+    width: 600px;
+}
+
+.frame h1 {
+    font-size: 16pt;
+    margin-left: 40px;
+    padding-top: 2px;
+}
+
+.user {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 2px 8px;
+    margin-right: 40px;
+    cursor: pointer;
+}
+
+select {
+    flex-grow: unset;
+    border: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+option {
+    background-color: red;
+    padding: 5px;
+}
